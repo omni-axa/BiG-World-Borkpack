@@ -1,0 +1,163 @@
+--- BP-NeJAreasSounds.bat	Thu Mar 30 08:23:24 2006
++++ C:\BWP Patchstudio\patched files\BP-NeJAreasSounds.bat	Sat May 22 07:42:12 2010
+@@ -5,6 +5,16 @@
+ move override\tisunpack.exe tisunpack.exe
+ copy Setup-NeJ2.exe Weidu.exe
+ 
++md NEJ-BAM
++md NEJ-BCS
++md NEJ-CRE
++md NEJ-DLG
++md NEJ-ITM
++md NEJ-STO
++md NEJ-RULE
++md NEJ-SFX
++md NEJ-SPL
++
+ md NEJ-TIS1
+ 
+ tisunpack -s -h -o NEJ-TIS1\TT0001.tis NeJ\tiz\TT0001.tiz
+@@ -52,15 +62,15 @@
+ tisunpack -s -h -o NEJ-TIS1\TT2114.tis NeJ\tiz\TT2114.tiz
+ tisunpack -s -h -o NEJ-TIS1\TT2115.tis NeJ\tiz\TT2115.tiz
+ tisunpack -s -h -o NEJ-TIS1\TT2116.tis NeJ\tiz\TT2116.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3000.tis NeJ\tiz\TT3000.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3001.tis NeJ\tiz\TT3001.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3101.tis NeJ\tiz\TT3101.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3201.tis NeJ\tiz\TT3201.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3301.tis NeJ\tiz\TT3301.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3401.tis NeJ\tiz\TT3401.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3501.tis NeJ\tiz\TT3501.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3502.tis NeJ\tiz\TT3502.tiz
+-tisunpack -s -h -o NEJ-TIS1\TT3503.tis NeJ\tiz\TT3503.tiz
++tisunpack -s -h -o NEJ-BAM\TT3000.tis NeJ\tiz\TT3000.tiz
++tisunpack -s -h -o NEJ-BCS\TT3001.tis NeJ\tiz\TT3001.tiz
++tisunpack -s -h -o NEJ-CRE\TT3101.tis NeJ\tiz\TT3101.tiz
++tisunpack -s -h -o NEJ-DLG\TT3201.tis NeJ\tiz\TT3201.tiz
++tisunpack -s -h -o NEJ-ITM\TT3301.tis NeJ\tiz\TT3301.tiz
++tisunpack -s -h -o NEJ-STO\TT3401.tis NeJ\tiz\TT3401.tiz
++tisunpack -s -h -o NEJ-RULE\TT3501.tis NeJ\tiz\TT3501.tiz
++tisunpack -s -h -o NEJ-SFX\TT3502.tis NeJ\tiz\TT3502.tiz
++tisunpack -s -h -o NEJ-SPL\TT3503.tis NeJ\tiz\TT3503.tiz
+ 
+ weidu --make-biff NEJ-TIS1
+ rd NEJ-TIS1 /s /q
+@@ -1003,7 +1013,7 @@
+ rd override\GUImusic /s /q
+ 
+ md NEJ-ARE
+-move override\*.are NEJ-ARE
++:: move override\*.are NEJ-ARE
+ move override\*.wed NEJ-ARE
+ move override\AR*.mos NEJ-ARE
+ move override\AR*.bmp NEJ-ARE
+@@ -1013,35 +1023,35 @@
+ weidu --make-biff NEJ-ARE
+ rd NEJ-ARE /s /q
+ 
+-md NEJ-BAM
+-move override\*.bam NEJ-BAM
++:: md NEJ-BAM
++:: move override\*.bam NEJ-BAM
+ 
+ weidu --make-biff NEJ-BAM
+ rd NEJ-BAM /s /q
+ 
+-md NEJ-BCS
+-move override\*.bcs NEJ-BCS
++:: md NEJ-BCS
++:: move override\*.bcs NEJ-BCS
+ 
+ weidu --make-biff NEJ-BCS
+ rd NEJ-BCS /s /q
+ 
+-md NEJ-CRE
+-move override\*.cre NEJ-CRE
++:: md NEJ-CRE
++:: move override\*.cre NEJ-CRE
+ 
+ weidu --make-biff NEJ-CRE
+ rd NEJ-CRE /s /q
+ 
+-md NEJ-DLG
+-move override\*.dlg NEJ-DLG
+-move NEJ-DLG\HROTHJ.DLG override
+-move NEJ-DLG\DARJ.DLG override
+-move NEJ-DLG\GOVAN2.DLG override
++:: md NEJ-DLG
++:: move override\*.dlg NEJ-DLG
++:: move NEJ-DLG\HROTHJ.DLG override
++:: move NEJ-DLG\DARJ.DLG override
++:: move NEJ-DLG\GOVAN2.DLG override
+ 
+ weidu --make-biff NEJ-DLG
+ rd NEJ-DLG /s /q
+ 
+-md NEJ-ITM
+-move override\*.itm NEJ-ITM
++:: md NEJ-ITM
++:: move override\*.itm NEJ-ITM
+ 
+ weidu --make-biff NEJ-ITM
+ rd NEJ-ITM /s /q
+@@ -1065,32 +1075,32 @@
+ weidu --make-biff NEJ-PIC
+ rd NEJ-PIC /s /q
+ 
+-md NEJ-STO
+-move override\*.sto NEJ-STO
++:: md NEJ-STO
++:: move override\*.sto NEJ-STO
+ 
+ weidu --make-biff NEJ-STO
+ rd NEJ-STO /s /q
+ 
+-md NEJ-RULE
+-move override\*.2da NEJ-RULE
+-move override\*.ids NEJ-RULE
+-move override\*.chu NEJ-RULE
++:: md NEJ-RULE
++:: move override\*.2da NEJ-RULE
++:: move override\*.ids NEJ-RULE
++:: move override\*.chu NEJ-RULE
+ 
+ weidu --make-biff NEJ-RULE
+ rd NEJ-RULE /s /q
+ 
+-md NEJ-SFX
+-move override\*.eff NEJ-SFX
+-move override\*.pro NEJ-SFX
+-move override\*.vvc NEJ-SFX
++:: md NEJ-SFX
++:: move override\*.eff NEJ-SFX
++:: move override\*.pro NEJ-SFX
++:: move override\*.vvc NEJ-SFX
+ 
+ weidu --make-biff NEJ-SFX
+ rd NEJ-SFX /s /q
+ 
+-md NEJ-SPL
+-move override\*.spl NEJ-SPL
+-del NEJ-SPL\SPCL221.SPL /s /q
+-del NEJ-SPL\SPCL242.SPL /s /q
++:: md NEJ-SPL
++:: move override\*.spl NEJ-SPL
++:: del NEJ-SPL\SPCL221.SPL /s /q
++:: del NEJ-SPL\SPCL242.SPL /s /q
+ 
+ weidu --make-biff NEJ-SPL
+ rd NEJ-SPL /s /q
+@@ -1137,6 +1147,13 @@
+ 
+ weidu --make-biff NEJ-WAV5
+ rd NEJ-WAV5 /s /q
++
++FOR %%s IN (
++override\*.baf
++override\*.d
++override\*.ogg
++override\*.tiz
++) DO del %%s
+ 
+ @echo ////////////////////////////
+ @echo // Installation complete. //

@@ -1,0 +1,24 @@
+--- Setup-DSotSC.tp2	2008-12-31 19:21:58.774375000 +0100
++++ C:\BWP Patchstudio\patched files\Setup-DSotSC.tp2	2010-09-11 06:29:48.468750000 +0200
+@@ -39,15 +39,15 @@
+ REQUIRE_PREDICATE FILE_EXISTS_IN_GAME ~ar7200.are~ ~This component is only relevant for BGT.~
+ DESIGNATED 0
+ 
+-MKDIR ~DSotSC/over.bak~
+-COPY_LARGE + ~override~    ~DSotSC/over.bak~
++// MKDIR ~DSotSC/over.bak~
++// COPY_LARGE + ~override~    ~DSotSC/over.bak~
+ 
+-COPY + ~Setup-DSotSC.exe~  ~WeiDU.exe~
+-COPY + ~chitin.key~        ~DSotSC/chitin.dsc~
+-COPY_LARGE + ~dialog.tlk~  ~DSotSC/dialog.dsc~
++// COPY + ~Setup-DSotSC.exe~  ~WeiDU.exe~
++// COPY + ~chitin.key~        ~DSotSC/chitin.dsc~
++// COPY_LARGE + ~dialog.tlk~  ~DSotSC/dialog.dsc~
+ 
+ MKDIR ~DSOTSC1~
+-COPY ~DSotSC/BAM~	~DSotSC1~
++COPY ~DSotSC/BAM~	~override~
+ 
+ APPEND ~TOOLTIP.2DA~ ~DSAXE06           15527        15529        -1kkkkkk~
+ APPEND ~TOOLTIP.2DA~ ~DSCLUB01          15527        15529        -1kkkkkk~

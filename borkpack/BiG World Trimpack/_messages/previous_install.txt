@@ -1,0 +1,4 @@
+Previous installation of the BiG World Trimpack detected!
+This Trimpack cannot be installed multiple times.
+If you are sure you haven't run it before, try looking for a file
+BWP_Trimpack.installed in the current directory and delete it.

@@ -1,0 +1,31 @@
+--- ToA\setup-toa.TP2	Wed Nov 04 22:54:57 2009
++++ C:\BWP Patchstudio\patched files\ToA\setup-toa.TP2	Sat Apr 17 10:31:05 2010
+@@ -17,18 +17,18 @@
+          ~ToA/language/english/journal.tra~
+ 
+ BEGIN @1 DESIGNATED 01
+-MKDIR ~ToA/over.bak~
+-COPY_EXISTING + ~AR0700.bcs~    ~ToA/over.bak~
+-COPY_EXISTING + ~AR5500.bcs~    ~ToA/over.bak~
++// MKDIR ~ToA/over.bak~
++// COPY_EXISTING + ~AR0700.bcs~    ~ToA/over.bak~
++// COPY_EXISTING + ~AR5500.bcs~    ~ToA/over.bak~
+ 
+-COPY + ~setup-toa.exe~ ~Weidu.exe~
+-COPY + ~chitin.key~ ~ToA/chitin.toa~
+-COPY_LARGE + ~dialog.tlk~  ~ToA/dialog.toa~
++// COPY + ~setup-toa.exe~ ~Weidu.exe~
++// COPY + ~chitin.key~ ~ToA/chitin.toa~
++// COPY_LARGE + ~dialog.tlk~  ~ToA/dialog.toa~
+ 
+-ACTION_IF FILE_EXISTS ~dialogf.tlk~
+-THEN BEGIN
+-COPY_LARGE + ~dialogf.tlk~  ~ToA/dialogf.toa~
+-END
++// ACTION_IF FILE_EXISTS ~dialogf.tlk~
++// THEN BEGIN
++// COPY_LARGE + ~dialogf.tlk~  ~ToA/dialogf.toa~
++// END
+ 
+ EXTEND_BOTTOM ~AR0700.bcs~ ~ToA/areabaf/AR0700.baf~
+ EXTEND_BOTTOM ~AR5500.bcs~ ~ToA/areabaf/AR5500.baf~

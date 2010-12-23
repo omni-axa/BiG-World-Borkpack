@@ -1,0 +1,19 @@
+--- Setup-RoT.tp2	Sat Jun 14 20:23:08 2008
++++ C:\BWP Patchstudio\patched files\Setup-RoT.tp2	Sat Apr 17 09:07:40 2010
+@@ -81,12 +81,12 @@
+ //***********************************************************************************
+ PRINT @2
+ 
+-MKDIR ~RoTerror/over.bak~
+-COPY_LARGE + ~override~      ~RoTerror/over.bak~
++// MKDIR ~RoTerror/over.bak~
++// COPY_LARGE + ~override~      ~RoTerror/over.bak~
+ 
+ COPY + ~Setup-RoT.exe~     ~WeiDU.exe~
+-COPY + ~chitin.key~        ~RoTerror/chitin.rot~
+-COPY_LARGE + ~dialog.tlk~  ~RoTerror/dialog.rot~
++// COPY + ~chitin.key~        ~RoTerror/chitin.rot~
++// COPY_LARGE + ~dialog.tlk~  ~RoTerror/dialog.rot~
+ 
+ MKDIR ~ROT-ARE~
+ MKDIR ~ROT-BAM~

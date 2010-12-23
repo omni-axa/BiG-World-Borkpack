@@ -1,0 +1,13 @@
+--- Setup-RevisedBattles.tp2	Sat Aug 23 01:00:56 2008
++++ C:\BWP Patchstudio\patched files\Setup-RevisedBattles.tp2	Sat Apr 17 09:00:25 2010
+@@ -82,8 +82,8 @@
+ 
+ COPY + ~Setup-RevisedBattles.exe~ ~WeiDU.exe~
+ 
+-COPY + ~chitin.key~ ~RevisedBattles/chitin.ib~
+-COPY_LARGE + ~dialog.tlk~ ~RevisedBattles/dialog.ib~
++// COPY + ~chitin.key~ ~RevisedBattles/chitin.ib~
++// COPY_LARGE + ~dialog.tlk~ ~RevisedBattles/dialog.ib~
+ 
+ //MKDIR ~RevisedBattles/over.bak~
+ //COPY_LARGE + ~override~ ~RevisedBattles/over.bak~

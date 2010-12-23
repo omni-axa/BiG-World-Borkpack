@@ -1,0 +1,33 @@
+--- Setup-BoneHillv275.tp2	Fri Apr 16 18:20:23 2010
++++ C:\BWP Patchstudio\patched files\Setup-BoneHillv275.tp2	Sat Apr 17 12:15:46 2010
+@@ -33,12 +33,12 @@
+ 
+ BEGIN @0
+ 
+-MKDIR ~bonehillv275/over.bak~
+-COPY_LARGE + ~override~      ~bonehillv275/over.bak~
++// MKDIR ~bonehillv275/over.bak~
++// COPY_LARGE + ~override~      ~bonehillv275/over.bak~
+ 
+-COPY + ~Setup-BoneHillv275.exe~  ~WeiDU.exe~
+-COPY + ~chitin.key~        ~bonehillv275/chitin.bh~
+-COPY_LARGE + ~dialog.tlk~  ~bonehillv275/dialog.bh~
++// COPY + ~Setup-BoneHillv275.exe~  ~WeiDU.exe~
++// COPY + ~chitin.key~        ~bonehillv275/chitin.bh~
++// COPY_LARGE + ~dialog.tlk~  ~bonehillv275/dialog.bh~
+ 
+ MKDIR ~BH-TIS1~
+ MKDIR ~BH-TIS2~
+@@ -1714,10 +1714,10 @@
+ 
+ ACTION_IF FILE_EXISTS ~data/BG1ARE.bif~
+  THEN BEGIN
+-  COPY	~Bonehillv275/creatures/spawns~	~BH-REST~
++  COPY	~Bonehillv275/creatures/spawns~	~override~
+   COMPILE	~Bonehillv275/BGT/spawns~
+  END ELSE BEGIN
+-  COPY	~Bonehillv275/creatures/spawns~	~BH-REST~
++  COPY	~Bonehillv275/creatures/spawns~	~override~
+   COMPILE	~Bonehillv275/Tutu/spawns~
+ END
+ 

@@ -1,0 +1,17 @@
+--- Setup-CtB.tp2	Thu Mar 25 14:03:51 2010
++++ C:\BWP Patchstudio\patched files\Setup-CtB.tp2	Fri Apr 16 07:21:05 2010
+@@ -37,10 +37,10 @@
+ 
+ COPY + ~Setup-CtB.exe~ ~WeiDU.exe~
+ COPY + ~Setup-CtB.exe~ ~Setup-CtB-Chores.exe~
+-COPY + ~chitin.key~ ~CtB/chitin.ctb~
+-COPY_LARGE + ~dialog.tlk~ ~CtB/dialog.ctb~
+-MKDIR ~CtB/over.bak~
+-COPY_LARGE + ~override~ ~CtB/over.bak~
++// COPY + ~chitin.key~ ~CtB/chitin.ctb~
++// COPY_LARGE + ~dialog.tlk~ ~CtB/dialog.ctb~
++// MKDIR ~CtB/over.bak~
++// COPY_LARGE + ~override~ ~CtB/over.bak~
+ MKDIR ~CTB-ARE~
+ MKDIR ~CTB-BCS~
+ MKDIR ~CTB-BAM~

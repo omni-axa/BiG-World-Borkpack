@@ -1,0 +1,21 @@
+--- Setup-BGT.tp2	Fri May 07 23:30:21 2010
++++ C:\BWP Patchstudio\patched files\Setup-BGT.tp2	Sat May 08 16:05:09 2010
+@@ -150,13 +150,13 @@
+ // chitin.key and override backup
+ ///////////////////////////////////////////////////////
+ 
+-PRINT ~~
+-PRINT @100002
++// PRINT ~~
++// PRINT @100002
+ 
+-COPY ~chitin.key~ ~chitin.key~
++// COPY ~chitin.key~ ~chitin.key~
+ 
+-MKDIR ~BGT/over.bak~
+-COPY_LARGE + ~override~ ~BGT/over.bak~
++// MKDIR ~BGT/over.bak~
++// COPY_LARGE + ~override~ ~BGT/over.bak~
+ 
+ ///////////////////////////////////////////////////////
+ // now check to prevent override directory being empty

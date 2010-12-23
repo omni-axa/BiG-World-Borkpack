@@ -1,0 +1,767 @@
+
+BACKUP	~AzenMOD/backup~  
+
+AUTHOR	~erebusant@verizon.net~
+
+VERSION	~v5~
+
+AUTO_TRA ~AzenMOD/Language/%s/D~
+
+LANGUAGE	~English~
+		~english~
+		~AzenMOD/Language/english/setup.tra~
+
+LANGUAGE	~French~
+		~french~
+		~AzenMOD/Language/french/setup.tra~
+
+LANGUAGE	~Deutsch~
+		~german~
+		~AzenMOD/Language/german/setup.tra~
+
+LANGUAGE	~Italian~
+		~italian~
+		~AzenMOD/Language/italian/setup.tra~
+
+	///////////////////////////////////////////////////////////////////////
+	// ~Azengaard Tactical Encounter MOD (ToB)~
+	///////////////////////////////////////////////////////////////////////
+
+BEGIN @0
+
+COPY + ~Setup-AzenMod.exe~  ~WeiDU.exe~
+COPY + ~chitin.key~        ~AzenMod/chitin.az~
+COPY_LARGE + ~dialog.tlk~  ~AzenMod/dialog.az~
+//MKDIR ~AzenMod/over.bak~
+//COPY_LARGE + ~override~ ~AzenMod/over.bak~
+
+COPY	~azenMOD/are~		~override~
+	~azenMOD/bcs~		~override~
+	~azenMOD/portrait~	~override~
+	~azenMOD/sound~		~override~
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~shout20.bcs~	THEN BEGIN
+  COPY	~azenMOD/bcs/add/shout20.bcs~	~override~	// sare override script
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~ceskel01.cre~	THEN BEGIN
+  COPY	~azenMOD/cre/add/ceskel01.cre~	~override~	// crypt skeleton
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~ibootfox.bam~	THEN BEGIN
+  COPY	~azenMOD/bam/ibootfox.bam~	~override~	//.bam for Boots of the Fox
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~isw1aze.bam~	THEN BEGIN
+  COPY	~azenMOD/bam/isw1aze.bam~	~override~	//.bam for Azurenkarath
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~isw1var.bam~	THEN BEGIN
+  COPY	~azenMOD/bam/isw1var.bam~	~override~	//.bam for Varscona
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~sw1h06.itm~	THEN BEGIN
+  COPY	~azenMOD/itm/add/sw1h06.itm~	~override~	// Varscona
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~sw1h23.itm~	THEN BEGIN
+  COPY	~azenMOD/itm/add/sw1h23.itm~	~override~	// Rashad's Talon
+END
+
+ACTION_IF NOT FILE_EXISTS_IN_GAME	~sw1h24.itm~	THEN BEGIN
+  COPY	~azenMOD/sw1h24.itm~	~override~	// Flame Tongue
+END
+
+COPY_EXISTING	~kpchap01.sto~	~override~
+	ADD_STORE_ITEM ~JC_BT01~ AFTER ~scrl63~ #0 #0 #0 ~IDENTIFIED~ #1
+	ADD_STORE_ITEM ~SW1H06~ AFTER ~JC_BT01~ #0 #0 #0 ~IDENTIFIED~ #1
+
+	// copy the creatures and assign names
+COPY ~azenMOD/cre/jc_ange.cre~ ~override~
+  SAY NAME1 @1
+  SAY NAME2 @1
+
+COPY ~azenMOD/cre/jc_assn.cre~ ~override~
+  SAY NAME1 @2
+  SAY NAME2 @2
+
+COPY ~azenMOD/cre/jc_azen.cre~ ~override~
+  SAY NAME1 @3
+  SAY NAME2 @3
+
+COPY ~azenMOD/cre/jc_batt.cre~ ~override~
+  SAY NAME1 @4
+  SAY NAME2 @4
+
+COPY ~azenMOD/cre/jc_lich.cre~ ~override~
+  SAY NAME1 @5
+  SAY NAME2 @5
+
+COPY ~azenMOD/cre/jc_mage.cre~ ~override~
+  SAY NAME1 @6
+  SAY NAME2 @6
+
+COPY ~azenMOD/cre/jc_sare.cre~ ~override~
+  SAY NAME1 @7
+  SAY NAME2 @7
+
+COPY ~azenMOD/cre/jc_sema.cre~ ~override~
+  SAY NAME1 @8
+  SAY NAME2 @8
+
+COPY ~azenMOD/cre/jc_tazo.cre~ ~override~
+  SAY NAME1 @9
+  SAY NAME2 @9
+
+	// copy items and assign names and descriptions
+COPY ~azenMOD/itm/jc_bt01.itm~ ~override~
+   SAY NAME1 @10
+   SAY NAME2 @11
+   SAY UNIDENTIFIED_DESC @12
+   SAY DESC @13
+
+COPY ~azenMOD/itm/jc_sw01.itm~ ~override~
+   SAY NAME1 @14
+   SAY NAME2 @15
+   SAY UNIDENTIFIED_DESC @16
+   SAY DESC @17
+
+COMPILE ~azenMOD/D~
+
+COPY ~override/jc_azen.dlg~ ~override/jc_azen.dlg~
+REPLACE ~99999~ @18
+
+EXTEND_BOTTOM   ~ar1700.bcs~ ~azenMOD/bcs/append/ar1700.bcs~
+
+AT_INTERACTIVE_EXIT ~VIEW AzenMOD\ReadMe-AzenMOD.html~
+
+BEGIN	@19
+
+COPY_EXISTING	~AR2013.ARE~	~override~
+	READ_LONG 0x54 ~actoroffset~
+	READ_SHORT 0x58 ~actornum~
+	SET ~numsofar~=0
+	SET ~numdeleted~=0
+	WHILE (~%numsofar%~<~%actornum%~) BEGIN //go through each actor, deleting them if they have the wrong CRE name
+		READ_ASCII (~%numsofar%~*0x110 + ~%actoroffset%~+0x80) ~actorname~
+		PATCH_IF 	!(~%actorname%~ STRING_COMPARE_CASE ~SKELET01~ AND
+				~%actorname%~ STRING_COMPARE_CASE ~SKELWA~ AND
+				~%actorname%~ STRING_COMPARE_CASE ~CESKEL01~)
+		THEN BEGIN
+			DELETE_BYTES (~%numsofar%~*0x110 +~%actoroffset%~) 0x110
+			SET ~actornum~=~%actornum%~-1
+			SET ~numsofar~=~%numsofar%~-1
+			SET ~numdeleted~=~%numdeleted%~+1 //count up the number deleted
+		END
+		SET ~numsofar~=~%numsofar%~+1
+	END
+	READ_LONG 0x5c ~offset~	// go through each offset, and if it's larger than the actor offset, decrease it by 0x110 times the number of actors deleted
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x5c (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0x60 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x60 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0x68 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x68 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0x70 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x70 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0x78 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x78 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0x7c ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x7c (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0x84 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x84 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0x88 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0x88 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0xa0 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0xa0 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0xa8 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0xa8 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0xb0 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0xb0 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0xb8 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0xb8 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0xbc ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0xbc (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0xc0 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0xc0 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	READ_LONG 0xc4 ~offset~
+	PATCH_IF (~%offset%~>~%actoroffset%~) THEN BEGIN
+		WRITE_LONG 0xc4 (~%offset%~-~%numdeleted%~*0x110)
+	END
+	WRITE_SHORT 0x58 ~actornum~ //write in the new number of actors
+
+ BUT_ONLY_IF_IT_CHANGES  //********************************************************  ~AR2013.are~
+
+COPY_EXISTING ~AR2013.ARE~ ~override~
+ READ_LONG  0x54  "actors_offset"
+ READ_SHORT 0x58  "actors_num"
+ READ_SHORT 0x5a  "infotrig_num"
+ READ_LONG  0x5c  "infotrig_offset"
+ READ_LONG  0x60  "spawns_offset"
+ READ_LONG  0x64  "spawns_num"
+ READ_LONG  0x68  "entrances_offset"
+ READ_LONG  0x6c  "entrances_num"
+ READ_LONG  0x70  "cont_offset"
+ READ_SHORT 0x74  "cont_num"
+ READ_SHORT 0x76  "items_num"
+ READ_LONG  0x78  "items_offset"
+ READ_LONG  0x7c  "vert_offset"
+ READ_SHORT 0x80  "vert_num"
+ READ_SHORT 0x82  "amb_num"
+ READ_LONG  0x84  "amb_offset"
+ READ_LONG  0x88  "vars_offset"
+ READ_LONG  0x8c  "vars_num"
+ READ_LONG  0xa0  "expbmp_offset"
+ READ_LONG  0xa4  "doors_num"
+ READ_LONG  0xa8  "doors_offset"
+ READ_LONG  0xac  "anim_num"
+ READ_LONG  0xb0  "anim_offset"
+ READ_LONG  0xb4  "tiled_num"
+ READ_LONG  0xb8  "tiled_offset"
+ READ_LONG  0xbc  "songs_offset"
+ READ_LONG  0xc0  "rest_spawns_offset"
+ READ_LONG  0xc4  "automap_offset"
+ READ_LONG  0xc8  "automap_num"
+
+ SET info_1=1
+ FOR( cnt=0; cnt<"%actors_num%"; cnt=cnt+1 ) BEGIN  //actors loop
+   READ_ASCII ("%actors_offset%"+0x110*cnt)       "actor_name" (10)
+   PATCH_IF (("%actor_name%" STRING_COMPARE_CASE "Crypt Lich")=0) BEGIN  //if already exists
+     info_1=0
+   END
+ END
+
+ PATCH_IF (info_1=1) BEGIN             //adding new actors  *******************************
+   SET offset = ("%actors_offset%"+0x110*"%actors_num%")
+   INSERT_BYTES offset 0x110
+   WRITE_ASCII offset ~Crypt Lich~
+   WRITE_SHORT (offset+0x20) 664          //X
+   WRITE_SHORT (offset+0x22) 422          //Y
+   WRITE_SHORT (offset+0x24) 664          //destination X
+   WRITE_SHORT (offset+0x26) 422          //destination Y
+   WRITE_LONG  (offset+0x28) 1            //visible
+   WRITE_BYTE  (offset+0x30) 0x03         //unknown
+   WRITE_BYTE  (offset+0x31) 0x64         //unknown
+   WRITE_LONG  (offset+0x34) 0            //orientation
+   WRITE_LONG  (offset+0x38) 0xffffffff   //unknown
+   WRITE_LONG  (offset+0x40) 0xffffffff   //schedule
+   WRITE_ASCII (offset+0x80) ~JC_LICH~    //creature
+   INSERT_BYTES offset 0x110
+   WRITE_ASCII offset ~Greater Mummy~
+   WRITE_SHORT (offset+0x20) 573          //X
+   WRITE_SHORT (offset+0x22) 361          //Y
+   WRITE_SHORT (offset+0x24) 573          //destination X
+   WRITE_SHORT (offset+0x26) 361          //destination Y
+   WRITE_LONG  (offset+0x28) 1            //visible
+   WRITE_BYTE  (offset+0x30) 0x03         //unknown
+   WRITE_BYTE  (offset+0x31) 0x64         //unknown
+   WRITE_LONG  (offset+0x34) 0            //orientation
+   WRITE_LONG  (offset+0x38) 0xffffffff   //unknown
+   WRITE_LONG  (offset+0x40) 0xffffffff   //schedule
+   WRITE_ASCII (offset+0x80) ~MUMGRE01~   //creature
+   INSERT_BYTES offset 0x110
+   WRITE_ASCII offset ~Skeleton Warrior~
+   WRITE_SHORT (offset+0x20) 360          //X
+   WRITE_SHORT (offset+0x22) 335          //Y
+   WRITE_SHORT (offset+0x24) 360          //destination X
+   WRITE_SHORT (offset+0x26) 335          //destination Y
+   WRITE_LONG  (offset+0x28) 1            //visible
+   WRITE_BYTE  (offset+0x30) 0x03         //unknown
+   WRITE_BYTE  (offset+0x31) 0x64         //unknown
+   WRITE_LONG  (offset+0x34) 0            //orientation
+   WRITE_LONG  (offset+0x38) 0xffffffff   //unknown
+   WRITE_LONG  (offset+0x40) 0xffffffff   //schedule
+   WRITE_ASCII (offset+0x80) ~CESKEL01~   //creature
+   INSERT_BYTES offset 0x110
+   WRITE_ASCII offset ~Skeleton Warrior~
+   WRITE_SHORT (offset+0x20) 436          //X
+   WRITE_SHORT (offset+0x22) 288          //Y
+   WRITE_SHORT (offset+0x24) 436          //destination X
+   WRITE_SHORT (offset+0x26) 288          //destination Y
+   WRITE_LONG  (offset+0x28) 1            //visible
+   WRITE_BYTE  (offset+0x30) 0x03         //unknown
+   WRITE_BYTE  (offset+0x31) 0x64         //unknown
+   WRITE_LONG  (offset+0x34) 0            //orientation
+   WRITE_LONG  (offset+0x38) 0xffffffff   //unknown
+   WRITE_LONG  (offset+0x40) 0xffffffff   //schedule
+   WRITE_ASCII (offset+0x80) ~CESKEL01~   //creature
+   SET "actors_num"="%actors_num%"+4
+   WRITE_SHORT 0x58  "%actors_num%"
+ END
+
+ SET "info_ext"=0x110*4
+ PATCH_IF ("%infotrig_offset%">="%actors_offset%") BEGIN
+   "infotrig_offset"="%infotrig_offset%"+"%info_ext%"
+   WRITE_LONG  0x5c "%infotrig_offset%"
+ END
+ PATCH_IF ("%spawns_offset%">="%actors_offset%") BEGIN
+   "spawns_offset"="%spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0x60  "%spawns_offset%"
+ END
+ PATCH_IF ("%entrances_offset%">="%actors_offset%") BEGIN
+   "entrances_offset"="%entrances_offset%"+"%info_ext%"
+   WRITE_LONG  0x68  "%entrances_offset%"
+ END
+ PATCH_IF ("%cont_offset%">="%actors_offset%") BEGIN
+   "cont_offset"="%cont_offset%"+"%info_ext%"
+   WRITE_LONG  0x70  "%cont_offset%"
+ END
+ PATCH_IF ("%items_offset%">="%actors_offset%") BEGIN
+   "items_offset"="%items_offset%"+"%info_ext%"
+   WRITE_LONG  0x78  "%items_offset%"
+ END
+ PATCH_IF ("%vert_offset%">="%actors_offset%") BEGIN
+   "vert_offset"="%vert_offset%"+"%info_ext%"
+   WRITE_LONG  0x7c  "%vert_offset%"
+ END
+ PATCH_IF ("%amb_offset%">="%actors_offset%") BEGIN
+   "amb_offset"="%amb_offset%"+"%info_ext%"
+   WRITE_LONG  0x84  "%amb_offset%"
+ END
+ PATCH_IF ("%vars_offset%">="%actors_offset%") BEGIN
+   "vars_offset"="%vars_offset%"+"%info_ext%"
+   WRITE_LONG  0x88  "%vars_offset%"
+ END
+ PATCH_IF ("%expbmp_offset%">="%actors_offset%") BEGIN
+   "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+   WRITE_LONG  0xa0  "%expbmp_offset%"
+ END
+ PATCH_IF ("%doors_offset%">="%actors_offset%") BEGIN
+   "doors_offset"="%doors_offset%"+"%info_ext%"
+   WRITE_LONG  0xa8  "%doors_offset%"
+ END
+ PATCH_IF ("%anim_offset%">="%actors_offset%") BEGIN
+   "anim_offset"="%anim_offset%"+"%info_ext%"
+   WRITE_LONG  0xb0  "%anim_offset%"
+ END
+ PATCH_IF ("%tiled_offset%">="%actors_offset%") BEGIN
+   "tiled_offset"="%tiled_offset%"+"%info_ext%"
+   WRITE_LONG  0xb8  "%tiled_offset%"
+ END
+ PATCH_IF ("%songs_offset%">="%actors_offset%") BEGIN
+   "songs_offset"="%songs_offset%"+"%info_ext%"
+   WRITE_LONG  0xbc  "%songs_offset%"
+ END
+ PATCH_IF ("%rest_spawns_offset%">="%actors_offset%") BEGIN
+   "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0xc0  "%rest_spawns_offset%"
+ END
+ PATCH_IF ("%automap_offset%">="%actors_offset%") BEGIN
+   "automap_offset"="%automap_offset%"+"%info_ext%"
+   WRITE_LONG  0xc4  "%automap_offset%"
+ END
+ BUT_ONLY_IF_IT_CHANGES  //********************************************************  ~AR2013.are~
+
+BEGIN	@20
+
+//	~azenMOD/AR0602.are~	~override/AR0602.are~	// Adds Entrance "EXIT03JC" and changes script of the Jail Portal at 3873x 2436y to TELE02JC from original of TELE0603 or TELE2IWD if NEJ2 is installed. This Portal needs location changed and entrance changed to a different location. (ie; somewhere up in the Library, or something).
+
+
+COPY_EXISTING ~AR0602.ARE~ ~override~
+ READ_LONG  0x54  "actors_offset"
+ READ_SHORT 0x58  "actors_num"
+ READ_SHORT 0x5a  "infotrig_num"
+ READ_LONG  0x5c  "infotrig_offset"
+ READ_LONG  0x60  "spawns_offset"
+ READ_LONG  0x64  "spawns_num"
+ READ_LONG  0x68  "entrances_offset"
+ READ_LONG  0x6c  "entrances_num"
+ READ_LONG  0x70  "cont_offset"
+ READ_SHORT 0x74  "cont_num"
+ READ_SHORT 0x76  "items_num"
+ READ_LONG  0x78  "items_offset"
+ READ_LONG  0x7c  "vert_offset"
+ READ_SHORT 0x80  "vert_num"
+ READ_SHORT 0x82  "amb_num"
+ READ_LONG  0x84  "amb_offset"
+ READ_LONG  0x88  "vars_offset"
+ READ_LONG  0x8c  "vars_num"
+ READ_LONG  0xa0  "expbmp_offset"
+ READ_LONG  0xa4  "doors_num"
+ READ_LONG  0xa8  "doors_offset"
+ READ_LONG  0xac  "anim_num"
+ READ_LONG  0xb0  "anim_offset"
+ READ_LONG  0xb4  "tiled_num"
+ READ_LONG  0xb8  "tiled_offset"
+ READ_LONG  0xbc  "songs_offset"
+ READ_LONG  0xc0  "rest_spawns_offset"
+ READ_LONG  0xc4  "automap_offset"
+ READ_LONG  0xc8  "automap_num"
+
+ SET info_1=1
+ FOR( cnt=0; cnt<"%anim_num%"; cnt=cnt+1 ) BEGIN  //animations loop
+   READ_ASCII ("%anim_offset%"+0x4c*cnt)       "anim_name" //(10)
+   PATCH_IF (("%anim_name%" STRING_COMPARE_CASE "AzenPortal")=0) BEGIN  //if already exists
+     info_1=0
+   END
+ END
+
+ PATCH_IF (info_1=1) BEGIN             //adding new animation  *******************************
+   SET offset = ("%anim_offset%"+0x4c*"%anim_num%")
+   INSERT_BYTES offset 0x4c
+   WRITE_ASCII offset ~AzenPortal~
+   WRITE_SHORT (offset+0x20) 525           //X
+   WRITE_SHORT (offset+0x22) 910           //Y
+   WRITE_LONG  (offset+0x24) 0xffffffff    //schedule
+   WRITE_ASCII (offset+0x28) ~PORTL2A~     //Animation
+   WRITE_BYTE  (offset+0x30) 0             //Animation #
+   WRITE_BYTE  (offset+0x32) 0             //Frame #
+   WRITE_LONG  (offset+0x34) 1             //Flags
+   SET "anim_num"="%anim_num%"+1
+   WRITE_SHORT 0xac  "%anim_num%"
+ END
+
+ SET "info_ext"=0x4c
+ PATCH_IF ("%actors_offset%">="%anim_offset%") BEGIN
+   "actors_offset"="%actors_offset%"+"%info_ext%"
+   WRITE_LONG  0x54  "%actors_offset%"
+ END
+ PATCH_IF ("%infotrig_offset%">="%anim_offset%") BEGIN
+   "infotrig_offset"="%infotrig_offset%"+"%info_ext%"
+   WRITE_LONG  0x5c "%infotrig_offset%"
+ END
+ PATCH_IF ("%spawns_offset%">="%anim_offset%") BEGIN
+   "spawns_offset"="%spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0x60  "%spawns_offset%"
+ END
+ PATCH_IF ("%entrances_offset%">="%anim_offset%") BEGIN
+   "entrances_offset"="%entrances_offset%"+"%info_ext%"
+   WRITE_LONG  0x68  "%entrances_offset%"
+ END
+ PATCH_IF ("%cont_offset%">="%anim_offset%") BEGIN
+   "cont_offset"="%cont_offset%"+"%info_ext%"
+   WRITE_LONG  0x70  "%cont_offset%"
+ END
+ PATCH_IF ("%items_offset%">="%anim_offset%") BEGIN
+   "items_offset"="%items_offset%"+"%info_ext%"
+   WRITE_LONG  0x78  "%items_offset%"
+ END
+ PATCH_IF ("%vert_offset%">="%anim_offset%") BEGIN
+   "vert_offset"="%vert_offset%"+"%info_ext%"
+   WRITE_LONG  0x7c  "%vert_offset%"
+ END
+ PATCH_IF ("%amb_offset%">="%anim_offset%") BEGIN
+   "amb_offset"="%amb_offset%"+"%info_ext%"
+   WRITE_LONG  0x84  "%amb_offset%"
+ END
+ PATCH_IF ("%vars_offset%">="%anim_offset%") BEGIN
+   "vars_offset"="%vars_offset%"+"%info_ext%"
+   WRITE_LONG  0x88  "%vars_offset%"
+ END
+ PATCH_IF ("%expbmp_offset%">="%anim_offset%") BEGIN
+   "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+   WRITE_LONG  0xa0  "%expbmp_offset%"
+ END
+ PATCH_IF ("%doors_offset%">="%anim_offset%") BEGIN
+   "doors_offset"="%doors_offset%"+"%info_ext%"
+   WRITE_LONG  0xa8  "%doors_offset%"
+ END
+ PATCH_IF ("%tiled_offset%">="%anim_offset%") BEGIN
+   "tiled_offset"="%tiled_offset%"+"%info_ext%"
+   WRITE_LONG  0xb8  "%tiled_offset%"
+ END
+ PATCH_IF ("%songs_offset%">="%anim_offset%") BEGIN
+   "songs_offset"="%songs_offset%"+"%info_ext%"
+   WRITE_LONG  0xbc  "%songs_offset%"
+ END
+ PATCH_IF ("%rest_spawns_offset%">="%anim_offset%") BEGIN
+   "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0xc0  "%rest_spawns_offset%"
+ END
+ PATCH_IF ("%automap_offset%">="%anim_offset%") BEGIN
+   "automap_offset"="%automap_offset%"+"%info_ext%"
+   WRITE_LONG  0xc4  "%automap_offset%"
+ END
+ BUT_ONLY_IF_IT_CHANGES  //********************************************************  ~AR0602.are~
+
+COPY_EXISTING ~AR0602.ARE~ ~override~
+ READ_LONG  0x54  "actors_offset"
+ READ_SHORT 0x58  "actors_num"
+ READ_SHORT 0x5a  "infotrig_num"
+ READ_LONG  0x5c  "infotrig_offset"
+ READ_LONG  0x60  "spawns_offset"
+ READ_LONG  0x64  "spawns_num"
+ READ_LONG  0x68  "entrances_offset"
+ READ_LONG  0x6c  "entrances_num"
+ READ_LONG  0x70  "cont_offset"
+ READ_SHORT 0x74  "cont_num"
+ READ_SHORT 0x76  "items_num"
+ READ_LONG  0x78  "items_offset"
+ READ_LONG  0x7c  "vert_offset"
+ READ_SHORT 0x80  "vert_num"
+ READ_SHORT 0x82  "amb_num"
+ READ_LONG  0x84  "amb_offset"
+ READ_LONG  0x88  "vars_offset"
+ READ_LONG  0x8c  "vars_num"
+ READ_LONG  0xa0  "expbmp_offset"
+ READ_LONG  0xa4  "doors_num"
+ READ_LONG  0xa8  "doors_offset"
+ READ_LONG  0xac  "anim_num"
+ READ_LONG  0xb0  "anim_offset"
+ READ_LONG  0xb4  "tiled_num"
+ READ_LONG  0xb8  "tiled_offset"
+ READ_LONG  0xbc  "songs_offset"
+ READ_LONG  0xc0  "rest_spawns_offset"
+ READ_LONG  0xc4  "automap_offset"
+ READ_LONG  0xc8  "automap_num"
+
+//adding new trigger ************************************************
+   SET offset = ("%infotrig_offset%"+0xc4*"%infotrig_num%")
+   INSERT_BYTES offset 0xc4
+   WRITE_ASCII offset ~AzenPortal~
+   WRITE_SHORT (offset+0x20) 1            //info trigger
+   WRITE_SHORT (offset+0x22) 500          //bounding box
+   WRITE_SHORT (offset+0x24) 880          //bounding box
+   WRITE_SHORT (offset+0x26) 550          //bounding box
+   WRITE_SHORT (offset+0x28) 940          //bounding box
+   WRITE_SHORT (offset+0x2a) 4            //vertices number
+   WRITE_LONG  (offset+0x2c) "%vert_num%" //first vertex index
+   WRITE_LONG  (offset+0x34) 8            //cursor
+   WRITE_LONG  (offset+0x60) 0x00000004   //flags - party required
+   WRITE_SHORT (offset+0x70) 525          //Trap location X
+   WRITE_SHORT (offset+0x72) 930          //Trap location Y
+   WRITE_ASCII (offset+0x7c) ~TELE02JC~	//Script
+   SET "infotrig_num"="%infotrig_num%"+1
+   WRITE_SHORT 0x5a  "%infotrig_num%"
+
+   SET "info_ext"=0xc4
+   PATCH_IF ("%actors_offset%">="%infotrig_offset%") BEGIN
+     "actors_offset"="%actors_offset%"+"%info_ext%"
+     WRITE_LONG  0x54 "%actors_offset%"
+   END
+   PATCH_IF ("%spawns_offset%">="%infotrig_offset%") BEGIN
+     "spawns_offset"="%spawns_offset%"+"%info_ext%"
+     WRITE_LONG  0x60  "%spawns_offset%"
+   END
+   PATCH_IF ("%entrances_offset%">="%infotrig_offset%") BEGIN
+     "entrances_offset"="%entrances_offset%"+"%info_ext%"
+     WRITE_LONG  0x68  "%entrances_offset%"
+   END
+   PATCH_IF ("%cont_offset%">="%infotrig_offset%") BEGIN
+     "cont_offset"="%cont_offset%"+"%info_ext%"
+     WRITE_LONG  0x70  "%cont_offset%"
+   END
+   PATCH_IF ("%items_offset%">="%infotrig_offset%") BEGIN
+     "items_offset"="%items_offset%"+"%info_ext%"
+     WRITE_LONG  0x78  "%items_offset%"
+   END
+   PATCH_IF ("%vert_offset%">="%infotrig_offset%") BEGIN
+     "vert_offset"="%vert_offset%"+"%info_ext%"
+     WRITE_LONG  0x7c  "%vert_offset%"
+   END
+   PATCH_IF ("%amb_offset%">="%infotrig_offset%") BEGIN
+     "amb_offset"="%amb_offset%"+"%info_ext%"
+     WRITE_LONG  0x84  "%amb_offset%"
+   END
+   PATCH_IF ("%vars_offset%">="%infotrig_offset%") BEGIN
+     "vars_offset"="%vars_offset%"+"%info_ext%"
+     WRITE_LONG  0x88  "%vars_offset%"
+   END
+   PATCH_IF ("%expbmp_offset%">="%infotrig_offset%") BEGIN
+     "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+     WRITE_LONG  0xa0  "%expbmp_offset%"
+   END
+   PATCH_IF ("%doors_offset%">="%infotrig_offset%") BEGIN
+     "doors_offset"="%doors_offset%"+"%info_ext%"
+     WRITE_LONG  0xa8  "%doors_offset%"
+   END
+   PATCH_IF ("%anim_offset%">="%infotrig_offset%") BEGIN
+     "anim_offset"="%anim_offset%"+"%info_ext%"
+     WRITE_LONG  0xb0  "%anim_offset%"
+   END
+   PATCH_IF ("%tiled_offset%">="%infotrig_offset%") BEGIN
+     "tiled_offset"="%tiled_offset%"+"%info_ext%"
+     WRITE_LONG  0xb8  "%tiled_offset%"
+   END
+   PATCH_IF ("%songs_offset%">="%infotrig_offset%") BEGIN
+     "songs_offset"="%songs_offset%"+"%info_ext%"
+     WRITE_LONG  0xbc  "%songs_offset%"
+   END
+   PATCH_IF ("%rest_spawns_offset%">="%infotrig_offset%") BEGIN
+     "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+     WRITE_LONG  0xc0  "%rest_spawns_offset%"
+   END
+   PATCH_IF ("%automap_offset%">="%infotrig_offset%") BEGIN
+     "automap_offset"="%automap_offset%"+"%info_ext%"
+     WRITE_LONG  0xc4  "%automap_offset%"
+   END
+
+  //adding 4 new vertices for triggers
+   SET offset = ("%vert_offset%"+0x04*"%vert_num%")
+   INSERT_BYTES offset (0x04*4)
+   WRITE_SHORT  offset      505
+   WRITE_SHORT  (offset+2)  885
+   WRITE_SHORT  (offset+4)  545
+   WRITE_SHORT  (offset+6)  875
+   WRITE_SHORT  (offset+8)  545
+   WRITE_SHORT  (offset+10) 940
+   WRITE_SHORT  (offset+12) 505
+   WRITE_SHORT  (offset+14) 940
+   SET "vert_num"="%vert_num%"+4
+   WRITE_SHORT 0x80  "%vert_num%"
+
+   SET "info_ext"=0x04*4
+   PATCH_IF ("%actors_offset%">="%vert_offset%") BEGIN
+     "actors_offset"="%actors_offset%"+"%info_ext%"
+     WRITE_LONG  0x54 "%actors_offset%"
+   END
+   PATCH_IF ("%spawns_offset%">="%vert_offset%") BEGIN
+     "spawns_offset"="%spawns_offset%"+"%info_ext%"
+     WRITE_LONG  0x60  "%spawns_offset%"
+   END
+   PATCH_IF ("%entrances_offset%">="%vert_offset%") BEGIN
+     "entrances_offset"="%entrances_offset%"+"%info_ext%"
+     WRITE_LONG  0x68  "%entrances_offset%"
+   END
+   PATCH_IF ("%cont_offset%">="%vert_offset%") BEGIN
+     "cont_offset"="%cont_offset%"+"%info_ext%"
+     WRITE_LONG  0x70  "%cont_offset%"
+   END
+   PATCH_IF ("%items_offset%">="%vert_offset%") BEGIN
+     "items_offset"="%items_offset%"+"%info_ext%"
+     WRITE_LONG  0x78  "%items_offset%"
+   END
+   PATCH_IF ("%infotrig_offset%">="%vert_offset%") BEGIN
+     "infotrig_offset"="%infotrig_offset%"+"%info_ext%"
+     WRITE_LONG  0x5c  "%infotrig_offset%"
+   END
+   PATCH_IF ("%amb_offset%">="%vert_offset%") BEGIN
+     "amb_offset"="%amb_offset%"+"%info_ext%"
+     WRITE_LONG  0x84  "%amb_offset%"
+   END
+   PATCH_IF ("%vars_offset%">="%vert_offset%") BEGIN
+     "vars_offset"="%vars_offset%"+"%info_ext%"
+     WRITE_LONG  0x88  "%vars_offset%"
+   END
+   PATCH_IF ("%expbmp_offset%">="%vert_offset%") BEGIN
+     "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+     WRITE_LONG  0xa0  "%expbmp_offset%"
+   END
+   PATCH_IF ("%doors_offset%">="%vert_offset%") BEGIN
+     "doors_offset"="%doors_offset%"+"%info_ext%"
+     WRITE_LONG  0xa8  "%doors_offset%"
+   END
+   PATCH_IF ("%anim_offset%">="%vert_offset%") BEGIN
+     "anim_offset"="%anim_offset%"+"%info_ext%"
+     WRITE_LONG  0xb0  "%anim_offset%"
+   END
+   PATCH_IF ("%tiled_offset%">="%vert_offset%") BEGIN
+     "tiled_offset"="%tiled_offset%"+"%info_ext%"
+     WRITE_LONG  0xb8  "%tiled_offset%"
+   END
+   PATCH_IF ("%songs_offset%">="%vert_offset%") BEGIN
+     "songs_offset"="%songs_offset%"+"%info_ext%"
+     WRITE_LONG  0xbc  "%songs_offset%"
+   END
+   PATCH_IF ("%rest_spawns_offset%">="%vert_offset%") BEGIN
+     "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+     WRITE_LONG  0xc0  "%rest_spawns_offset%"
+   END
+   PATCH_IF ("%automap_offset%">="%vert_offset%") BEGIN
+     "automap_offset"="%automap_offset%"+"%info_ext%"
+     WRITE_LONG  0xc4  "%automap_offset%"
+   END
+
+ //adding 1 new entrance
+ SET offset = ("%entrances_offset%"+0x68*"%entrances_num%")
+ INSERT_BYTES offset 0x68
+ WRITE_ASCII  offset      ~Exit03JC~
+ WRITE_SHORT  (offset+0x20)  485     //X
+ WRITE_SHORT  (offset+0x22)  1015    //Y
+ WRITE_LONG   (offset+0x24)  "0"      // facing
+ SET "entrances_num"="%entrances_num%"+1
+ WRITE_LONG 0x6c  "%entrances_num%"
+
+ SET "info_ext"=0x68
+ PATCH_IF ("%actors_offset%">="%entrances_offset%") BEGIN
+   "actors_offset"="%actors_offset%"+"%info_ext%"
+   WRITE_LONG  0x54 "%actors_offset%"
+ END
+ PATCH_IF ("%spawns_offset%">="%entrances_offset%") BEGIN
+   "spawns_offset"="%spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0x60  "%spawns_offset%"
+ END
+ PATCH_IF ("%vert_offset%">="%entrances_offset%") BEGIN
+   "vert_offset"="%vert_offset%"+"%info_ext%"
+   WRITE_LONG  0x7c  "%vert_offset%"
+ END
+ PATCH_IF ("%cont_offset%">="%entrances_offset%") BEGIN
+   "cont_offset"="%cont_offset%"+"%info_ext%"
+   WRITE_LONG  0x70  "%cont_offset%"
+ END
+ PATCH_IF ("%items_offset%">="%entrances_offset%") BEGIN
+   "items_offset"="%items_offset%"+"%info_ext%"
+   WRITE_LONG  0x78  "%items_offset%"
+ END
+ PATCH_IF ("%infotrig_offset%">="%entrances_offset%") BEGIN
+   "infotrig_offset"="%infotrig_offset%"+"%info_ext%"
+   WRITE_LONG  0x5c  "%infotrig_offset%"
+ END
+ PATCH_IF ("%amb_offset%">="%entrances_offset%") BEGIN
+   "amb_offset"="%amb_offset%"+"%info_ext%"
+   WRITE_LONG  0x84  "%amb_offset%"
+ END
+ PATCH_IF ("%vars_offset%">="%entrances_offset%") BEGIN
+   "vars_offset"="%vars_offset%"+"%info_ext%"
+   WRITE_LONG  0x88  "%vars_offset%"
+ END
+ PATCH_IF ("%expbmp_offset%">="%entrances_offset%") BEGIN
+   "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+   WRITE_LONG  0xa0  "%expbmp_offset%"
+ END
+ PATCH_IF ("%doors_offset%">="%entrances_offset%") BEGIN
+   "doors_offset"="%doors_offset%"+"%info_ext%"
+   WRITE_LONG  0xa8  "%doors_offset%"
+ END
+ PATCH_IF ("%anim_offset%">="%entrances_offset%") BEGIN
+   "anim_offset"="%anim_offset%"+"%info_ext%"
+   WRITE_LONG  0xb0  "%anim_offset%"
+ END
+ PATCH_IF ("%tiled_offset%">="%entrances_offset%") BEGIN
+   "tiled_offset"="%tiled_offset%"+"%info_ext%"
+   WRITE_LONG  0xb8  "%tiled_offset%"
+ END
+ PATCH_IF ("%songs_offset%">="%entrances_offset%") BEGIN
+   "songs_offset"="%songs_offset%"+"%info_ext%"
+   WRITE_LONG  0xbc  "%songs_offset%"
+ END
+ PATCH_IF ("%rest_spawns_offset%">="%entrances_offset%") BEGIN
+   "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0xc0  "%rest_spawns_offset%"
+ END
+ PATCH_IF ("%automap_offset%">="%entrances_offset%") BEGIN
+   "automap_offset"="%automap_offset%"+"%info_ext%"
+   WRITE_LONG  0xc4  "%automap_offset%"
+ END
+
+BUT_ONLY_IF_IT_CHANGES  //********************************************************  ~AR0602.are~
+
+
+

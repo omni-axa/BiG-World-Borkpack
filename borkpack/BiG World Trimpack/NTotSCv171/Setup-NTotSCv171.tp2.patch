@@ -1,0 +1,15 @@
+--- Setup-NTotSCv171.tp2	2008-12-31 20:02:51.274375000 +0100
++++ C:\BWP Patchstudio\patched files\Setup-NTotSCv171.tp2	2010-09-11 06:31:30.593750000 +0200
+@@ -35,9 +35,9 @@
+ 
+ BEGIN ~Fix NTotSC Issues~
+ 
+-COPY + ~Setup-NTotSCv171.exe~ ~WeiDU.exe~
+-COPY + ~chitin.key~ ~NTotSCv171/chitin.ntf~
+-COPY_LARGE + ~dialog.tlk~ ~NTotSCv171/dialog.ntf~
++// COPY + ~Setup-NTotSCv171.exe~ ~WeiDU.exe~
++// COPY + ~chitin.key~ ~NTotSCv171/chitin.ntf~
++// COPY_LARGE + ~dialog.tlk~ ~NTotSCv171/dialog.ntf~
+ 
+ DEFINE_PATCH_MACRO ~DELETE_INFO_TRIGGER~ BEGIN
+   READ_LONG 0x54 "DIT_actor_off"

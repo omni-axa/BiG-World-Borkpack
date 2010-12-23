@@ -1,0 +1,2508 @@
+BACKUP ~TS/backup~
+
+AUTHOR ~Vlad & Domi, King Diamond (BP-compatible version)~ NO_IF_EVAL_BUG
+
+AUTO_TRA ~TS/Language/%s~
+
+LANGUAGE ~English~
+         ~English~
+         ~TS/Language/English/setup.tra~
+
+LANGUAGE ~Russian~
+         ~Russian~
+         ~TS/Language/Russian/setup.tra~
+
+LANGUAGE ~Spanish~
+         ~Spanish~
+         ~TS/Language/Spanish/setup.tra~
+
+LANGUAGE ~German~
+         ~German~
+         ~TS/Language/German/setup.tra~
+
+BEGIN @2000
+
+//______________________________________//
+//                                      //
+//       Tortured Souls v6.06           //
+//______________________________________//
+//                                      //
+//    BP adaptation - King Diamond      //
+//______________________________________//
+
+COPY + ~Setup-TS-BP.exe~ ~WeiDU.exe~
+
+COPY + ~chitin.key~ ~TS/chitin.ts~
+COPY_LARGE + ~dialog.tlk~ ~TS/dialog.ts~
+MKDIR ~TS/over.bak~
+COPY_LARGE + ~override~ ~TS/over.bak~
+MKDIR ~TS-ARE~
+MKDIR ~TS-BCS~
+MKDIR ~TS-BAM~
+MKDIR ~TS-CRE~
+MKDIR ~TS-DLG~
+MKDIR ~TS-ITM~
+MKDIR ~TS-MOS~
+MKDIR ~TS-RULE~
+MKDIR ~TS-TIS~
+MKDIR ~TS-WAV~
+MKDIR ~TSDLG~
+
+COPY ~TS/rules~ ~override~   //to overwrite files there!!!
+COPY ~TS/bam~   ~override~
+COPY ~TS/eff~   ~override~
+COPY ~TS/mos~   ~override~
+COPY ~TS/wed~   ~override~
+
+
+//Substitute the SoA button prompt string  ************************************
+COPY_EXISTING + ~TS/title.tr~ ~TS/title.tra~
+ SPRINT bgt " "
+ SPRINT tdd ""
+ SPRINT sos ""
+ SPRINT ts  ""
+ SPRINT nej ""
+ SPRINT ctb ""
+ SPRINT bp  ""
+ SPRINT rot ""
+ SPRINT separator ""
+ PATCH_IF (FILE_EXISTS ~data/BG1ARE.BIF~) BEGIN
+   SPRINT bgt @2003
+ END
+ SPRINT ts @2004
+ SPRINT separator ", "
+ SPRINT separator2 @2005
+ PATCH_IF (FILE_EXISTS ~data/TDD-RULE.BIF~) BEGIN
+   SPRINT tdd @2006
+   SPRINT separator ", "
+ END
+ PATCH_IF (FILE_EXISTS ~data/SoS-RULE.BIF~) BEGIN
+   SPRINT sos @2007
+   SPRINT separator ", "
+ END
+ PATCH_IF ((FILE_EXISTS_IN_GAME ~Bag02NeJ.ITM~) OR (FILE_EXISTS_IN_GAME ~EyeBite.itm~)) BEGIN
+   SPRINT nej @2008
+   SPRINT separator ", "
+ END
+ PATCH_IF (FILE_EXISTS ~data/BP-RULE.BIF~) BEGIN
+   SPRINT bp @2009
+   SPRINT separator ", "
+ END
+ PATCH_IF (FILE_EXISTS ~data/CTB-RULE.BIF~) BEGIN
+   SPRINT ctb @2010
+   SPRINT separator ", "
+ END
+ PATCH_IF (FILE_EXISTS ~data/ROT-RULE.BIF~) BEGIN
+   SPRINT rot @200101
+   SPRINT separator ", "
+ END
+ SPRINT str @2011
+ REPLACE_TEXTUALLY ~game prompt~ "%str%"
+
+ STRING_SET ~73245~ @123456789 USING ~TS/title.tra~
+///////////////////////////////////////////////////////////////////////////////
+
+/////////////////
+//   RULESETS  //
+/////////////////
+PRINT @2012
+
+
+COPY ~TS/screens/SCRTXT09.2da~ ~override~
+REPLACE ~scrtxt09~ @2013
+
+COPY ~TS/screens/SCRTXT10.2da~ ~override~
+REPLACE ~scrtxt10~ @2014
+
+COPY ~TS/screens/SCRTXT11.2da~ ~override~
+REPLACE ~scrtxt11~ @2015
+
+COPY ~TS/toda/DYNAD.2da~ ~override~
+REPLACE ~dynafin~ @2016
+
+COPY ~TS/toda/SIMED.2da~   ~override~
+     ~TS/toda/SIMEFND.2da~ ~override~
+REPLACE ~simefin~ @2017
+
+COPY ~TS/toda/SIMEND2.2da~ ~override~
+REPLACE ~sime2fin~ @2018
+
+COPY ~TS/toda/VALYGFND.2da~ ~override~
+     ~TS/toda/VALYGND.2da~  ~override~
+REPLACE ~valfin~ @2019
+
+COPY ~TS/toda/VALYGND2.2da~ ~override~
+REPLACE ~val2fin~ @2020
+
+COPY ~TS/toda/YOSHIMOD.2da~ ~override~
+REPLACE ~yoshifin~ @2021
+
+
+COPY_EXISTING ~PDIALOG.2da~ ~override~
+ REPLACE_TEXTUALLY ~yosh25~ ~yoshimo~
+
+APPEND ~PDIALOG.2da~
+~PPBODHI3     PPBODHI3           PPBODHI3          ***            PPBODHI3           PPBODHI3              ***                   ***
+SIME         SIMEP              SIMEJ             SIMED          SIME25P            SIME25J               ***                   sime25
+KACHIKO      KACHIP             KACHIJ            KACHID         KACHI25P           KACHI25J              KACHI25D              ***~
+UNLESS ~KACHIKO~
+
+APPEND ~INTERDIA.2da~
+~SIME        BSIME     BSIME25
+KACHIKO     BKACHI    BKACHI25~
+UNLESS ~KACHIKO~
+
+//necessary to check for possible BGT presence
+ACTION_IF FILE_EXISTS ~data/BG1ARE.BIF~     //BGT-WeiDU compatibility
+THEN BEGIN
+  COPY_EXISTING ~PDIALOG.2da~ ~override~
+   COUNT_2DA_ROWS 8 "rows_cnt"
+   FOR( cnt=0; cnt<"%rows_cnt%"; cnt=cnt+1 ) BEGIN
+     READ_2DA_ENTRY cnt 0 8 "row_name"
+     PATCH_IF( ("%row_name%" STRING_COMPARE_CASE "DYNAHEIR")=0 ) BEGIN
+       SET_2DA_ENTRY cnt 4 8 ~DYNAP~
+       SET_2DA_ENTRY cnt 5 8 ~DYNA25J~
+     END
+     PATCH_IF( ("%row_name%" STRING_COMPARE_CASE "CORAN")=0 ) BEGIN
+       SET_2DA_ENTRY cnt 4 8 ~CORAN25P~
+       SET_2DA_ENTRY cnt 5 8 ~CORAN25J~
+     END
+   END
+  BUT_ONLY_IF_IT_CHANGES
+END
+ELSE BEGIN                                  //if TS is standalone
+APPEND ~PDIALOG.2da~
+~DYNAHEIR     DYNAP              DYNAJ             ***            DYNAP              DYNA25J               ***                   ***
+CORAN        CORANP             CORANJ            ***            CORAN25P           CORAN25J              ***                   ***~
+UNLESS ~CORAN~
+
+APPEND ~INTERDIA.2da~
+~CORAN       BCORAN    ***~
+UNLESS ~CORAN~
+END
+
+
+//KIT.IDS (by Idobek - thanks!!!)
+COPY_EXISTING ~kit.ids~ ~override~
+  REPLACE_TEXTUALLY ~0x00004000~ ~0x4000~ // TRUECLASS/MAGESCHOOL_GENERALIST
+  REPLACE_TEXTUALLY ~0x00000040~ ~0x0040~ // MAGESCHOOL_ABJURER
+  REPLACE_TEXTUALLY ~0x00000080~ ~0x0080~ // MAGESCHOOL_CONJURER
+  REPLACE_TEXTUALLY ~0x00000100~ ~0x0100~ // MAGESCHOOL_DIVINER
+  REPLACE_TEXTUALLY ~0x00000200~ ~0x0200~ // MAGESCHOOL_ENCHANTER
+  REPLACE_TEXTUALLY ~0x00000400~ ~0x0400~ // MAGESCHOOL_ILLUSIONIST
+  REPLACE_TEXTUALLY ~0x00000800~ ~0x0800~ // MAGESCHOOL_INVOKER
+  REPLACE_TEXTUALLY ~0x00001000~ ~0x1000~ // MAGESCHOOL_NECROMANCER
+  REPLACE_TEXTUALLY ~0x00002000~ ~0x2000~ // MAGESCHOOL_TRANSMUTER
+  REPLACE_TEXTUALLY ~0x00000001~ ~0x4001~ // BERSERKER
+  REPLACE_TEXTUALLY ~0x00000002~ ~0x4002~ // WIZARDSLAYER
+  REPLACE_TEXTUALLY ~0x00000004~ ~0x4003~ // KENSAI
+  REPLACE_TEXTUALLY ~0x00000008~ ~0x4004~ // CAVALIER
+  REPLACE_TEXTUALLY ~0x00000010~ ~0x4005~ // INQUISITOR
+  REPLACE_TEXTUALLY ~0x00000020~ ~0x4006~ // UNDEADHUNTER
+  REPLACE_TEXTUALLY ~0x00008000~ ~0x4007~ // FERALAN
+  REPLACE_TEXTUALLY ~0x00010000~ ~0x4008~ // STALKER
+  REPLACE_TEXTUALLY ~0x00020000~ ~0x4009~ // BEASTMASTER
+  REPLACE_TEXTUALLY ~0x00040000~ ~0x400A~ // ASSASIN
+  REPLACE_TEXTUALLY ~0x00080000~ ~0x400B~ // BOUNTYHUNTER
+  REPLACE_TEXTUALLY ~0x00100000~ ~0x400C~ // SWASHBUCKLER
+  REPLACE_TEXTUALLY ~0x00200000~ ~0x400D~ // BLADE
+  REPLACE_TEXTUALLY ~0x00400000~ ~0x400E~ // JESTER
+  REPLACE_TEXTUALLY ~0x00800000~ ~0x400F~ // SKALD
+  REPLACE_TEXTUALLY ~0x01000000~ ~0x4013~ // GODTALOS
+  REPLACE_TEXTUALLY ~0x02000000~ ~0x4014~ // GODHELM
+  REPLACE_TEXTUALLY ~0x04000000~ ~0x4015~ // GODLATHANDER
+  REPLACE_TEXTUALLY ~0x08000000~ ~0x4010~ // TOTEMIC
+  REPLACE_TEXTUALLY ~0x10000000~ ~0x4011~ // SHAPESHIFTER
+  REPLACE_TEXTUALLY ~0x20000000~ ~0x4012~ // BEASTFRIEND
+  REPLACE_TEXTUALLY ~0x40000000~ ~0x401F~ // BARBARIAN
+BUT_ONLY_IF_IT_CHANGES
+
+
+ACTION_IF FILE_EXISTS ~script compiler/AICOMPILE.exe~
+THEN BEGIN
+COPY_EXISTING   ~KIT.IDS~         ~script compiler~
+END
+
+
+APPEND ~MASTAREA.2DA~
+~TT0010  value
+TT0100  value
+TT0101  value
+TT0102  value
+TT0201  value
+TT0202  value
+TT0203  value
+TT0204  value
+TT0301  value
+TT0302  value
+TT0303  value
+TT0304  value
+TT0305  value
+TT0306  value
+TT0307  value
+TT0308  value~
+
+
+///////////////////////////
+//Art & Sound, Animations
+///////////////////////////
+PRINT @2022
+
+COPY ~TS/anim/bam~  ~override~
+COPY ~TS/anim/cre~  ~override~
+COPY ~TS/anim/toda~ ~override~
+COPY ~TS/anim/ids~  ~override~
+
+ACTION_IF NOT FILE_EXISTS ~data/BG1ARE.BIF~     //BGT-WeiDU compatibility
+THEN BEGIN
+  COPY ~TS/Compat/TS/bam~ ~override~
+END
+
+ACTION_IF NOT FILE_EXISTS ~data/ROT-RULE.BIF~   // Compatibility with RoT
+THEN BEGIN
+  COPY ~TS/Compat/anim~ ~override~
+END
+
+COPY ~TS/cre/Kiotsi.cre~       ~override~
+  SAY NAME1 @2023
+  SAY NAME2 @2023
+  WRITE_LONG 0x28 0xE0D0   //IC_UMBERHULK always
+
+
+///////////////////////////
+//Dialogues
+///////////////////////////
+PRINT @2024
+
+COPY + ~TS/fix_p~  ~TSDLG~  //Imoen ToB dialogue fix
+COPY + ~TS/dlg~    ~TSDLG~
+
+ACTION_IF FILE_EXISTS ~data/BG1ARE.BIF~     //BGT-WeiDU compatibility
+THEN BEGIN
+  COPY + ~TS/Compat/BGT/DLG~   ~TSDLG~
+END
+ELSE BEGIN
+  COPY + ~TS/Compat/TS/BGT_DLG~    ~TSDLG~
+END
+
+ACTION_IF FILE_EXISTS ~data/SOS-RULE.BIF~  //SoS-WeiDU compatibility
+THEN BEGIN
+  COPY + ~TS/Compat/SoS/DLG~    ~TSDLG~
+END
+ELSE BEGIN
+  COPY + ~TS/Compat/TS/SoS_DLG~    ~TSDLG~
+END
+
+COMPILE ~TSDLG~
+
+
+///////////////////////////
+//Scripts
+///////////////////////////
+PRINT @2025
+
+COMPILE ~TS/baf~
+
+EXTEND_TOP ~AR0307.bcs~ ~TS/sExt/sAR0307.baf~
+EXTEND_TOP ~AR0603.bcs~ ~TS/sExt/sAR0603.baf~
+EXTEND_TOP ~AR0800.bcs~ ~TS/sExt/sAR0800.baf~
+EXTEND_TOP ~AR0809.bcs~ ~TS/sExt/sAR0809.baf~
+EXTEND_TOP ~AR1101.bcs~ ~TS/sExt/sAR1101.baf~
+EXTEND_TOP ~AR1516.bcs~ ~TS/sExt/sAR1516.baf~
+EXTEND_TOP ~AR2600.bcs~ ~TS/sExt/sAR2600.baf~
+EXTEND_TOP ~AR6200.bcs~ ~TS/sExt/sAR6200.baf~
+EXTEND_TOP ~Baldur.bcs~ ~TS/sExt/sBaldur.baf~
+EXTEND_TOP ~Bodhi.bcs~ ~TS/sExt/sBodhi.baf~
+EXTEND_TOP ~BODHIAMB.bcs~ ~TS/sExt/sBODHIAM.baf~
+EXTEND_TOP ~CLEANSE.bcs~ ~TS/sExt/sCLEANSE.baf~
+EXTEND_BOTTOM ~CUT218G.bcs~ ~TS/sExt/sCUT218G.baf~    //******************************
+EXTEND_TOP ~RIBALD.bcs~ ~TS/sExt/sRIBALD.baf~
+EXTEND_TOP ~PPSAEM2.bcs~ ~TS/sExt/sPPSAEM2.baf~
+EXTEND_TOP ~VAMPAMB.bcs~ ~TS/sExt/sVAMPAMB.baf~
+
+COPY_EXISTING ~VLUVINFO.BCS~ ~override~               //*******************************
+ DECOMPILE_BCS_TO_BAF
+ REPLACE_TEXTUALLY ~OR(4)~
+   ~OR(6)
+    Global("ValygarVampire","GLOBAL",3)
+    Global("VP_SimeVampire","GLOBAL",3)~
+ COMPILE_BAF_TO_BCS
+
+ACTION_IF FILE_EXISTS ~data/BG1ARE.BIF~     //BGT-WeiDU compatibility
+THEN BEGIN
+  EXTEND_TOP  ~AR2600.BCS~   ~TS/Compat/BGT/xAR2600.BAF~
+  EXTEND_TOP  ~DYNAHEIR.BCS~ ~TS/Compat/BGT/DYNAHEIR.BAF~
+  EXTEND_TOP  ~CORAN.BCS~    ~TS/Compat/BGT/CORAN.BAF~
+
+  //BGT Transition (1.0) **********************************************************
+  COPY_EXISTING ~ARAM00.BCS~ ~override~
+    DECOMPILE_BCS_TO_BAF
+    REPLACE_TEXTUALLY
+~ActionOverride("Coran",LeaveParty())
+ActionOverride("Coran",ChangeAIScript("",DEFAULT))
+ActionOverride("Coran",ClearAllActions())
+ActionOverride("Coran",DestroySelf())~
+~ActionOverride("Coran",LeaveParty())
+ActionOverride("Coran",ChangeAIScript("",DEFAULT))
+ActionOverride("Coran",ClearAllActions())
+SetGlobal("CoranPartyBG1","GLOBAL",1)
+ActionOverride("Coran",MoveBetweenAreas("AR2600",[826.1135],0))~
+    COMPILE_BAF_TO_BCS
+  //********************************************************************************
+END
+ELSE BEGIN
+  COMPILE ~TS/Compat/TS/DYNAHEIR.BAF~
+  COMPILE ~TS/Compat/TS/CORAN.BAF~
+END
+
+
+
+COMPILE ~TS/Compat/TS/PPTALK01.BAF~     //fully overwrite BG2 script
+
+EXTEND_TOP    ~VALY25.bcs~ ~TS/sExt/tVALY25.baf~
+EXTEND_BOTTOM ~VALY25.bcs~ ~TS/sExt/bVALY25.baf~
+
+COPY_EXISTING ~VALYGAR.bcs~ ~override~
+ REPLACE_BCS_BLOCK ~TS/sExt/xVALYGAR.baf~ ~TS/sExt/rVALYGAR.baf~
+EXTEND_TOP    ~VALYGAR.bcs~ ~TS/sExt/tVALYGAR.baf~
+EXTEND_BOTTOM ~VALYGAR.bcs~ ~TS/sExt/bVALYGAR.baf~
+
+EXTEND_TOP ~VALYGX.bcs~ ~TS/sExt/tVALYGX.baf~
+
+COMPILE ~TS/sExt/YOSHIMO.baf~          //fully overwrite BG2 script
+
+EXTEND_TOP ~YOSHX.bcs~ ~TS/sExt/tYOSHX.baf~
+
+EXTEND_BOTTOM ~AR0406.bcs~ ~TS/bonusmer/sAR0406.baf~
+EXTEND_BOTTOM ~AR0702.bcs~ ~TS/bonusmer/sAR0702.baf~
+
+//TS v6.09
+COPY_EXISTING ~Anomen.bcs~ ~override~
+ REPLACE_BCS_BLOCK ~TS/sExt/oAnomen.baf~ ~TS/sExt/nAnomen.baf~
+//temporary fix for Lavok's death (possible)
+COPY_EXISTING ~LAVOK02.CRE~ ~override~
+ WRITE_ASCII 0x250 ~~ #8    //CLASS script, clearing LAVOK02.BCS
+BUT_ONLY_IF_IT_CHANGES
+
+/////////////////////////////////////
+//Stores
+/////////////////////////////////////
+PRINT @2027
+
+COPY_EXISTING ~WMART1.sto~ ~override~
+  ADD_STORE_ITEM ~nitrite~ #0 #0 #0 ~IDENTIFIED~ #3
+  ADD_STORE_ITEM ~axechar~ #0 #0 #0 ~IDENTIFIED~ #1
+  ADD_STORE_ITEM ~bag04ts~ #0 #0 #0 ~IDENTIFIED~ #1
+  ADD_STORE_ITEM ~bowhamm~ #0 #0 #0 ~IDENTIFIED~ #1
+
+COPY_EXISTING ~WMART2.sto~ ~override~
+  ADD_STORE_ITEM ~namji~   #0 #0 #0 ~IDENTIFIED~ #1
+  ADD_STORE_ITEM ~robearm~ #0 #0 #0 ~IDENTIFIED~ #1
+  
+COPY ~TS/sto/BAG04TS.sto~ ~override~
+     ~TS/sto/BAG05TS.sto~ ~override~
+     ~TS/sto/BAG06TS.sto~ ~override~
+
+COPY ~TS/sto/Hasuno.sto~ ~override~
+SAY NAME2 @2028
+
+
+//////////////////////////////
+//Areas
+//////////////////////////////
+PRINT @2029
+
+COPY_EXISTING ~AR1101.ARE~  ~override~
+// READ_SHORT  0x48 "flags"
+// WRITE_SHORT 0x48 ("%flags%" BAND 0xffdf)  //Resetting Dungeon flag - BDash fix
+ WRITE_ASCII 0x94   ~AR1101~ #8 //area script
+BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~AR1512.ARE~  ~override~
+ READ_LONG  0x54  "actors_offset"
+ READ_SHORT 0x58  "actors_num"
+ READ_SHORT 0x5a  "infotrig_num"
+ READ_LONG  0x5c  "infotrig_offset"
+ READ_LONG  0x60  "spawns_offset"
+ READ_LONG  0x64  "spawns_num"
+ READ_LONG  0x68  "entrances_offset"
+ READ_LONG  0x6c  "entrances_num"
+ READ_LONG  0x70  "cont_offset"
+ READ_SHORT 0x74  "cont_num"
+ READ_SHORT 0x76  "items_num"
+ READ_LONG  0x78  "items_offset"
+ READ_LONG  0x7c  "vert_offset"
+ READ_SHORT 0x80  "vert_num"
+ READ_SHORT 0x82  "amb_num"
+ READ_LONG  0x84  "amb_offset"
+ READ_LONG  0x88  "vars_offset"
+ READ_LONG  0x8c  "vars_num"
+ READ_LONG  0xa0  "expbmp_offset"
+ READ_LONG  0xa4  "doors_num"
+ READ_LONG  0xa8  "doors_offset"
+ READ_LONG  0xac  "anim_num"
+ READ_LONG  0xb0  "anim_offset"
+ READ_LONG  0xb4  "tiled_num"
+ READ_LONG  0xb8  "tiled_offset"
+ READ_LONG  0xbc  "songs_offset"
+ READ_LONG  0xc0  "rest_spawns_offset"
+ READ_LONG  0xc4  "automap_offset"
+ READ_LONG  0xc8  "automap_num"
+
+ SET info_1=1
+ FOR( cnt=0; cnt<"%infotrig_num%"; cnt=cnt+1 ) BEGIN  //info/triggers loop
+   READ_ASCII ("%infotrig_offset%"+0xc4*cnt)       "info_name" (13)
+   PATCH_IF (("%info_name%" STRING_COMPARE_CASE "YoshimoExcuse")=0) BEGIN  //if already exists
+     info_1=0
+   END
+ END
+
+ PATCH_IF (info_1=1) BEGIN                //adding new Proximity trigger  *******************************
+   SET offset = ("%infotrig_offset%"+0xc4*"%infotrig_num%")
+   INSERT_BYTES offset 0xc4
+   WRITE_ASCII offset ~YoshimoExcuse~
+   WRITE_SHORT (offset+0x20) 0            //proximity trigger
+   WRITE_SHORT (offset+0x22) 1465         //bounding box
+   WRITE_SHORT (offset+0x24) 1493         //bounding box
+   WRITE_SHORT (offset+0x26) 1608         //bounding box
+   WRITE_SHORT (offset+0x28) 1624         //bounding box
+   WRITE_SHORT (offset+0x2a) 5            //vertices number
+   WRITE_LONG  (offset+0x2c) "%vert_num%" //first vertex index
+   WRITE_SHORT (offset+0x70) 1631         //trap location X
+   WRITE_SHORT (offset+0x72) 1508         //trap location Y
+   WRITE_ASCII (offset+0x7c) ~YOSHEXCS~   //script
+   SET "infotrig_num"="%infotrig_num%"+1
+   WRITE_SHORT 0x5a  "%infotrig_num%"
+ END
+
+ SET "info_ext"=0xc4*info_1
+ PATCH_IF ("%actors_offset%">="%infotrig_offset%") BEGIN
+   "actors_offset"="%actors_offset%"+"%info_ext%"
+   WRITE_LONG  0x54 "%actors_offset%"
+ END
+ PATCH_IF ("%spawns_offset%">="%infotrig_offset%") BEGIN
+   "spawns_offset"="%spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0x60  "%spawns_offset%"
+ END
+ PATCH_IF ("%entrances_offset%">="%infotrig_offset%") BEGIN
+   "entrances_offset"="%entrances_offset%"+"%info_ext%"
+   WRITE_LONG  0x68  "%entrances_offset%"
+ END
+ PATCH_IF ("%cont_offset%">="%infotrig_offset%") BEGIN
+   "cont_offset"="%cont_offset%"+"%info_ext%"
+   WRITE_LONG  0x70  "%cont_offset%"
+ END
+ PATCH_IF ("%items_offset%">="%infotrig_offset%") BEGIN
+   "items_offset"="%items_offset%"+"%info_ext%"
+   WRITE_LONG  0x78  "%items_offset%"
+ END
+ PATCH_IF ("%vert_offset%">="%infotrig_offset%") BEGIN
+   "vert_offset"="%vert_offset%"+"%info_ext%"
+   WRITE_LONG  0x7c  "%vert_offset%"
+ END
+ PATCH_IF ("%amb_offset%">="%infotrig_offset%") BEGIN
+   "amb_offset"="%amb_offset%"+"%info_ext%"
+   WRITE_LONG  0x84  "%amb_offset%"
+ END
+ PATCH_IF ("%vars_offset%">="%infotrig_offset%") BEGIN
+   "vars_offset"="%vars_offset%"+"%info_ext%"
+   WRITE_LONG  0x88  "%vars_offset%"
+ END
+ PATCH_IF ("%expbmp_offset%">="%infotrig_offset%") BEGIN
+   "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+   WRITE_LONG  0xa0  "%expbmp_offset%"
+ END
+ PATCH_IF ("%doors_offset%">="%infotrig_offset%") BEGIN
+   "doors_offset"="%doors_offset%"+"%info_ext%"
+   WRITE_LONG  0xa8  "%doors_offset%"
+ END
+ PATCH_IF ("%anim_offset%">="%infotrig_offset%") BEGIN
+   "anim_offset"="%anim_offset%"+"%info_ext%"
+   WRITE_LONG  0xb0  "%anim_offset%"
+ END
+ PATCH_IF ("%tiled_offset%">="%infotrig_offset%") BEGIN
+   "tiled_offset"="%tiled_offset%"+"%info_ext%"
+   WRITE_LONG  0xb8  "%tiled_offset%"
+ END
+ PATCH_IF ("%songs_offset%">="%infotrig_offset%") BEGIN
+   "songs_offset"="%songs_offset%"+"%info_ext%"
+   WRITE_LONG  0xbc  "%songs_offset%"
+ END
+ PATCH_IF ("%rest_spawns_offset%">="%infotrig_offset%") BEGIN
+   "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0xc0  "%rest_spawns_offset%"
+ END
+ PATCH_IF ("%automap_offset%">="%infotrig_offset%") BEGIN
+   "automap_offset"="%automap_offset%"+"%info_ext%"
+   WRITE_LONG  0xc4  "%automap_offset%"
+ END
+
+ PATCH_IF (info_1=1) BEGIN            //adding vertices for the new trigger
+   SET offset = ("%vert_offset%"+0x04*"%vert_num%")
+   INSERT_BYTES offset (0x04*5)
+   WRITE_SHORT  offset      1465
+   WRITE_SHORT  (offset+2)  1567
+   WRITE_SHORT  (offset+4)  1575
+   WRITE_SHORT  (offset+6)  1492
+   WRITE_SHORT  (offset+8)  1608
+   WRITE_SHORT  (offset+10) 1550
+   WRITE_SHORT  (offset+12) 1497
+   WRITE_SHORT  (offset+14) 1624
+   WRITE_SHORT  (offset+16) 1465
+   WRITE_SHORT  (offset+18) 1567
+   SET "vert_num"="%vert_num%"+5
+   WRITE_SHORT 0x80  "%vert_num%"
+ END
+
+ SET "info_ext"=0x04*info_1*5
+ PATCH_IF ("%actors_offset%">="%vert_offset%") BEGIN
+   "actors_offset"="%actors_offset%"+"%info_ext%"
+   WRITE_LONG  0x54 "%actors_offset%"
+ END
+ PATCH_IF ("%spawns_offset%">="%vert_offset%") BEGIN
+   "spawns_offset"="%spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0x60  "%spawns_offset%"
+ END
+ PATCH_IF ("%entrances_offset%">="%vert_offset%") BEGIN
+   "entrances_offset"="%entrances_offset%"+"%info_ext%"
+   WRITE_LONG  0x68  "%entrances_offset%"
+ END
+ PATCH_IF ("%cont_offset%">="%vert_offset%") BEGIN
+   "cont_offset"="%cont_offset%"+"%info_ext%"
+   WRITE_LONG  0x70  "%cont_offset%"
+ END
+ PATCH_IF ("%items_offset%">="%vert_offset%") BEGIN
+   "items_offset"="%items_offset%"+"%info_ext%"
+   WRITE_LONG  0x78  "%items_offset%"
+ END
+ PATCH_IF ("%infotrig_offset%">="%vert_offset%") BEGIN
+   "infotrig_offset"="%infotrig_offset%"+"%info_ext%"
+   WRITE_LONG  0x5c  "%infotrig_offset%"
+ END
+ PATCH_IF ("%amb_offset%">="%vert_offset%") BEGIN
+   "amb_offset"="%amb_offset%"+"%info_ext%"
+   WRITE_LONG  0x84  "%amb_offset%"
+ END
+ PATCH_IF ("%vars_offset%">="%vert_offset%") BEGIN
+   "vars_offset"="%vars_offset%"+"%info_ext%"
+   WRITE_LONG  0x88  "%vars_offset%"
+ END
+ PATCH_IF ("%expbmp_offset%">="%vert_offset%") BEGIN
+   "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+   WRITE_LONG  0xa0  "%expbmp_offset%"
+ END
+ PATCH_IF ("%doors_offset%">="%vert_offset%") BEGIN
+   "doors_offset"="%doors_offset%"+"%info_ext%"
+   WRITE_LONG  0xa8  "%doors_offset%"
+ END
+ PATCH_IF ("%anim_offset%">="%vert_offset%") BEGIN
+   "anim_offset"="%anim_offset%"+"%info_ext%"
+   WRITE_LONG  0xb0  "%anim_offset%"
+ END
+ PATCH_IF ("%tiled_offset%">="%vert_offset%") BEGIN
+   "tiled_offset"="%tiled_offset%"+"%info_ext%"
+   WRITE_LONG  0xb8  "%tiled_offset%"
+ END
+ PATCH_IF ("%songs_offset%">="%vert_offset%") BEGIN
+   "songs_offset"="%songs_offset%"+"%info_ext%"
+   WRITE_LONG  0xbc  "%songs_offset%"
+ END
+ PATCH_IF ("%rest_spawns_offset%">="%vert_offset%") BEGIN
+   "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+   WRITE_LONG  0xc0  "%rest_spawns_offset%"
+ END
+ PATCH_IF ("%automap_offset%">="%vert_offset%") BEGIN
+   "automap_offset"="%automap_offset%"+"%info_ext%"
+   WRITE_LONG  0xc4  "%automap_offset%"
+ END
+BUT_ONLY_IF_IT_CHANGES  //********************************************************  ~AR1512.are~
+
+
+COPY_EXISTING ~AR2600.ARE~  ~override~
+ READ_LONG  0xa4  "doors_num"
+ READ_LONG  0xa8  "doors_offset"
+ FOR( cnt=0; cnt<"%doors_num%"; cnt=cnt+1 ) BEGIN  //doors loop
+   READ_ASCII ("%doors_offset%"+0xc8*cnt)       "door_name"
+   PATCH_IF (("%door_name%" STRING_COMPARE_CASE "Door01")=0) BEGIN
+     WRITE_LONG ("%doors_offset%"+0xc8*cnt+0x28)  0x000001a2  //door flags
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES //********************************************************  ~AR2600.are~
+
+
+COPY_EXISTING ~AR2602.are~           ~override~
+ READ_LONG  0x54  "actors_offset"
+ READ_SHORT 0x58  "actors_num"
+ READ_SHORT 0x5a  "infotrig_num"
+ READ_LONG  0x5c  "infotrig_offset"
+ READ_LONG  0x60  "spawns_offset"
+ READ_LONG  0x64  "spawns_num"
+ READ_LONG  0x68  "entrances_offset"
+ READ_LONG  0x6c  "entrances_num"
+ READ_LONG  0x70  "cont_offset"
+ READ_SHORT 0x74  "cont_num"
+ READ_SHORT 0x76  "items_num"
+ READ_LONG  0x78  "items_offset"
+ READ_LONG  0x7c  "vert_offset"
+ READ_SHORT 0x80  "vert_num"
+ READ_SHORT 0x82  "amb_num"
+ READ_LONG  0x84  "amb_offset"
+ READ_LONG  0x88  "vars_offset"
+ READ_LONG  0x8c  "vars_num"
+ READ_LONG  0xa0  "expbmp_offset"
+ READ_LONG  0xa4  "doors_num"
+ READ_LONG  0xa8  "doors_offset"
+ READ_LONG  0xac  "anim_num"
+ READ_LONG  0xb0  "anim_offset"
+ READ_LONG  0xb4  "tiled_num"
+ READ_LONG  0xb8  "tiled_offset"
+ READ_LONG  0xbc  "songs_offset"
+ READ_LONG  0xc0  "rest_spawns_offset"
+ READ_LONG  0xc4  "automap_offset"
+ READ_LONG  0xc8  "automap_num"
+
+ SET "first_item"=0
+ SET "items"=0
+ FOR( cnt=0; cnt<"%cont_num%"; cnt=cnt+1 ) BEGIN  //containers loop
+   READ_ASCII ("%cont_offset%"+0xc0*cnt)       "cont_name" (11)
+   PATCH_IF ("%items%">0) BEGIN
+     READ_LONG ("%cont_offset%"+0xc0*cnt+0x40)  "first_item_next"        //shift all next containers' items
+     WRITE_LONG ("%cont_offset%"+0xc0*cnt+0x40)  "%first_item_next%"+12
+   END
+   PATCH_IF (("%cont_name%" STRING_COMPARE_CASE "Container 1")=0) BEGIN
+     READ_LONG ("%cont_offset%"+0xc0*cnt+0x40)  "first_item"
+     READ_LONG ("%cont_offset%"+0xc0*cnt+0x44)  "items"
+     WRITE_LONG ("%cont_offset%"+0xc0*cnt+0x44) "%items%"+12  //we'll add 12 more items there
+   END
+ END
+
+ PATCH_IF ("%items%">0 ) BEGIN
+   WRITE_SHORT 0x76  "%items_num%"+12       //increment total items count
+
+   SET offset = ("%items_offset%"+0x14*"%first_item%")  //adding 5 item the container  *******************************
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~AMUL01~ #8
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~BOOT01~ #8
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~PLAT06~ #8
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~SW2H06~ #8
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC36~ #8
+   WRITE_SHORT  offset+10     5          //quantity
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC39~ #8
+   WRITE_SHORT  offset+10     5          //quantity
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC41~ #8
+   WRITE_SHORT  offset+10     3          //quantity
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC42~ #8
+   WRITE_SHORT  offset+10     3          //quantity
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC43~ #8
+   WRITE_SHORT  offset+10     3          //quantity
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC44~ #8
+   WRITE_SHORT  offset+10     2          //quantity
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC45~ #8
+   WRITE_SHORT  offset+10     2          //quantity
+   INSERT_BYTES offset        0x14
+   WRITE_ASCII  offset        ~MISC07~ #8
+   WRITE_SHORT  offset+10     5834       //quantity
+
+   SET "info_ext"=0x14*12               //we added 12 items
+   PATCH_IF ("%actors_offset%">="%items_offset%") BEGIN
+     "actors_offset"="%actors_offset%"+"%info_ext%"
+     WRITE_LONG  0x54 "%actors_offset%"
+   END
+   PATCH_IF ("%spawns_offset%">="%items_offset%") BEGIN
+     "spawns_offset"="%spawns_offset%"+"%info_ext%"
+     WRITE_LONG  0x60  "%spawns_offset%"
+   END
+   PATCH_IF ("%entrances_offset%">="%items_offset%") BEGIN
+     "entrances_offset"="%entrances_offset%"+"%info_ext%"
+     WRITE_LONG  0x68  "%entrances_offset%"
+   END
+   PATCH_IF ("%cont_offset%">="%items_offset%") BEGIN
+     "cont_offset"="%cont_offset%"+"%info_ext%"
+     WRITE_LONG  0x70  "%cont_offset%"
+   END
+   PATCH_IF ("%vert_offset%">="%items_offset%") BEGIN
+     "vert_offset"="%vert_offset%"+"%info_ext%"
+     WRITE_LONG  0x7c  "%vert_offset%"
+   END
+   PATCH_IF ("%infotrig_offset%">="%items_offset%") BEGIN
+     "infotrig_offset"="%infotrig_offset%"+"%info_ext%"
+     WRITE_LONG  0x5c  "%infotrig_offset%"
+   END
+   PATCH_IF ("%amb_offset%">="%items_offset%") BEGIN
+     "amb_offset"="%amb_offset%"+"%info_ext%"
+     WRITE_LONG  0x84  "%amb_offset%"
+   END
+   PATCH_IF ("%vars_offset%">="%items_offset%") BEGIN
+     "vars_offset"="%vars_offset%"+"%info_ext%"
+     WRITE_LONG  0x88  "%vars_offset%"
+   END
+   PATCH_IF ("%expbmp_offset%">="%items_offset%") BEGIN
+     "expbmp_offset"="%expbmp_offset%"+"%info_ext%"
+     WRITE_LONG  0xa0  "%expbmp_offset%"
+   END
+   PATCH_IF ("%doors_offset%">="%items_offset%") BEGIN
+     "doors_offset"="%doors_offset%"+"%info_ext%"
+     WRITE_LONG  0xa8  "%doors_offset%"
+   END
+   PATCH_IF ("%anim_offset%">="%items_offset%") BEGIN
+     "anim_offset"="%anim_offset%"+"%info_ext%"
+     WRITE_LONG  0xb0  "%anim_offset%"
+   END
+   PATCH_IF ("%tiled_offset%">="%items_offset%") BEGIN
+     "tiled_offset"="%tiled_offset%"+"%info_ext%"
+     WRITE_LONG  0xb8  "%tiled_offset%"
+   END
+   PATCH_IF ("%songs_offset%">="%items_offset%") BEGIN
+     "songs_offset"="%songs_offset%"+"%info_ext%"
+     WRITE_LONG  0xbc  "%songs_offset%"
+   END
+   PATCH_IF ("%rest_spawns_offset%">="%items_offset%") BEGIN
+     "rest_spawns_offset"="%rest_spawns_offset%"+"%info_ext%"
+     WRITE_LONG  0xc0  "%rest_spawns_offset%"
+   END
+   PATCH_IF ("%automap_offset%">="%items_offset%") BEGIN
+     "automap_offset"="%automap_offset%"+"%info_ext%"
+     WRITE_LONG  0xc4  "%automap_offset%"
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES  //***********  ~AR2602.are~
+
+
+COPY_EXISTING ~AR2812.ARE~  ~override~
+ WRITE_ASCII 0x94   ~~ #8      //area script
+BUT_ONLY_IF_IT_CHANGES
+//***************************************************************************
+
+PRINT @2030
+
+COPY ~TS/are/TT0010.ARE~           ~override/TT0010.ARE~
+COPY ~TS/are/TT0100.ARE~           ~override/TT0100.ARE~
+  SAY 0x3e10 @2031
+COPY ~TS/are/TT0101.ARE~           ~override/TT0101.ARE~
+COPY ~TS/are/TT0102.ARE~           ~override/TT0102.ARE~
+COPY ~TS/are/TT0201.ARE~           ~override/TT0201.ARE~
+COPY ~TS/are/TT0202.ARE~           ~override/TT0202.ARE~
+COPY ~TS/are/TT0203.ARE~           ~override/TT0203.ARE~
+COPY ~TS/are/TT0204.ARE~           ~override/TT0204.ARE~
+COPY ~TS/are/TT0301.ARE~           ~override/TT0301.ARE~
+  SAY 0x354 @2032
+  SAY 0x418 @2032
+  SAY 0x4dc @2033
+COPY ~TS/are/TT0302.ARE~           ~override/TT0302.ARE~
+COPY ~TS/are/TT0303.ARE~           ~override/TT0303.ARE~
+COPY ~TS/are/TT0304.ARE~           ~override/TT0304.ARE~
+COPY ~TS/are/TT0305.ARE~           ~override/TT0305.ARE~
+COPY ~TS/are/TT0306.ARE~           ~override/TT0306.ARE~
+COPY ~TS/are/TT0307.ARE~           ~override/TT0307.ARE~
+COPY ~TS/are/TT0308.ARE~           ~override/TT0308.ARE~
+
+//////////////////////////////////////////////
+// Spells
+//////////////////////////////////////////////
+
+COPY_EXISTING ~SPIN678.SPL~ ~override~
+ READ_LONG  0x64 "ability_offset"
+ READ_SHORT 0x68 "abil_cnt"
+ READ_LONG  0x6a "eff_offset"
+ FOR( cnt=0; cnt<"%abil_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_BYTE ("%ability_offset%"+cnt*0x28)  "type"
+   PATCH_IF("%type%"=1) BEGIN                                      //Melee
+     READ_SHORT ("%ability_offset%"+0x28*cnt+0x1e)  eff_number
+     READ_SHORT ("%ability_offset%"+0x28*cnt+0x20)  eff_idx
+     FOR( cnt2=0; cnt2<eff_number; cnt2=cnt2+1 ) BEGIN
+       READ_SHORT ("%eff_offset%"+0x30*(cnt2+eff_idx))  "eff_type"
+       PATCH_IF( "%eff_type%" = 49 ) BEGIN                       //wisdom bonus
+         WRITE_LONG ("%eff_offset%"+0x30*(cnt2+eff_idx)+4) 18    //value, 16 is mentioned everywhere though...
+       END
+     END
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+/////////////////////////////////////////////
+//Items
+/////////////////////////////////////////////
+PRINT @2034
+
+COPY_EXISTING ~CLCK26.ITM~         ~override~
+ READ_LONG  0x64  "ability_offset"
+ READ_SHORT 0x68  "abil_cnt"
+ READ_LONG  0x6a  "eff_offset"
+ READ_SHORT 0x70  "glob_eff_cnt"
+ PATCH_IF( "%glob_eff_cnt%"=1 ) THEN BEGIN
+   SET offset = ("%eff_offset%"+0x30*"%glob_eff_cnt%")
+   INSERT_BYTES offset    0x30*4
+   WRITE_SHORT  offset    291   //Disable visual effect
+   WRITE_BYTE   offset+2  1     //TargetSelf
+   WRITE_LONG   offset+8  1     //Must be 1?
+   WRITE_BYTE   offset+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+18 100   //Probability 1
+   WRITE_ASCII  offset+20 ~SPMAGGLO~ //effect name
+   WRITE_SHORT  (offset+0x30)    215    //Play 3D effect
+   WRITE_BYTE   (offset+0x30)+2  1     //TargetSelf
+   WRITE_LONG   (offset+0x30)+8  1     //Play over target
+   WRITE_BYTE   (offset+0x30)+12 2     //Instant/While equipped
+   WRITE_BYTE   (offset+0x30)+18 100    //Probability 1
+   WRITE_ASCII  (offset+0x30)+20 ~SPTURNI2~ //effect name
+   WRITE_SHORT  (offset+0x30*2)    142    //Display portrait icon
+   WRITE_BYTE   (offset+0x30*2)+2  1     //TargetSelf
+   WRITE_LONG   (offset+0x30*2)+8  67     //Spell deflection
+   WRITE_BYTE   (offset+0x30*2)+12 2     //Instant/While equipped
+   WRITE_BYTE   (offset+0x30*2)+18 100   //Probability 1
+   WRITE_SHORT  (offset+0x30*3)    139    //Display string
+   WRITE_BYTE   (offset+0x30*3)+2  1     //TargetSelf
+   WRITE_LONG   (offset+0x30*3)+4  10884  //StrRef
+   WRITE_BYTE   (offset+0x30*3)+12 2     //Instant/While equipped
+   WRITE_BYTE   (offset+0x30*3)+18 100    //Probability 1
+   WRITE_SHORT 0x70  "%glob_eff_cnt%"+4
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~HAMM09.ITM~ ~override~
+ READ_LONG  0x64 "ability_offset"
+ READ_SHORT 0x68 "abil_cnt"
+ READ_LONG  0x6a "eff_offset"
+ FOR( cnt=0; cnt<"%abil_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_BYTE ("%ability_offset%"+cnt*0x38)  "type"
+   PATCH_IF("%type%"=1) BEGIN                                      //Melee
+     READ_SHORT ("%ability_offset%"+0x38*cnt+0x1e)  eff_number
+     READ_SHORT ("%ability_offset%"+0x38*cnt+0x20)  eff_idx
+     FOR( cnt2=0; cnt2<eff_number; cnt2=cnt2+1 ) BEGIN
+       READ_SHORT ("%eff_offset%"+0x30*(cnt2+eff_idx))  "eff_type"
+       SET offset = "%eff_offset%"+0x30*(cnt2+eff_idx)
+       PATCH_IF( "%eff_type%" = 12 ) BEGIN                       //Damage
+         WRITE_SHORT  offset    177
+         WRITE_BYTE   offset+2  2
+         WRITE_BYTE   offset+3  0
+         WRITE_LONG   offset+4  5    
+         WRITE_LONG   offset+8  3    
+         WRITE_BYTE   offset+12 1
+         WRITE_BYTE   offset+13 0    
+         WRITE_LONG   offset+14 0    
+         WRITE_BYTE   offset+18 100  
+         WRITE_BYTE   offset+19 0
+         WRITE_ASCII  offset+20 ~DIE~ #8
+         WRITE_LONG   offset+0x20 0
+         WRITE_LONG   offset+0x24 0x00000004
+       END
+       WRITE_BYTE   offset+13 0
+     END
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~NPCHAN.ITM~ ~override~
+ READ_LONG  0x6a  "eff_offset"
+ READ_SHORT 0x70  "glob_eff_cnt"
+ PATCH_IF( "%glob_eff_cnt%"<=21 ) THEN BEGIN  //original one or baldurdashed
+   SET offset = ("%eff_offset%"+0x30*"%glob_eff_cnt%")
+   INSERT_BYTES offset    0x30*18
+   WRITE_SHORT  offset           101   //Immunity to effect
+   WRITE_BYTE   offset+2         1     //TargetSelf
+   WRITE_LONG   offset+8         216   //Level drain
+   WRITE_BYTE   offset+12        2     //Instant/While equipped
+   WRITE_BYTE   offset+13        0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+18        100   //Probability 1
+
+   WRITE_SHORT  offset+0x30      169   //Remove portrait icon
+   WRITE_BYTE   offset+0x30+2    1     //TargetSelf
+   WRITE_LONG   offset+0x30+8    59    //Energy drain
+   WRITE_BYTE   offset+0x30+12   2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30+13   0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30+18   100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*2    169   //Remove portrait icon
+   WRITE_BYTE   offset+0x30*2+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*2+8  53    //Level drain
+   WRITE_BYTE   offset+0x30*2+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*2+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*2+18 100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*3    206   //Protection from spell
+   WRITE_BYTE   offset+0x30*3+2  1     //TargetSelf
+   WRITE_BYTE   offset+0x30*3+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*3+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*3+18 100   //Probability 1
+   WRITE_ASCII  offset+0x30*3+20 ~SPIN878~
+   WRITE_SHORT  offset+0x30*4    206   //Protection from spell
+   WRITE_BYTE   offset+0x30*4+2  1     //TargetSelf
+   WRITE_BYTE   offset+0x30*4+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*4+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*4+18 100   //Probability 1
+   WRITE_ASCII  offset+0x30*4+20 ~SPIN985~
+   WRITE_SHORT  offset+0x30*5    206   //Protection from spell
+   WRITE_BYTE   offset+0x30*5+2  1     //TargetSelf
+   WRITE_BYTE   offset+0x30*5+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*5+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*5+18 100   //Probability 1
+   WRITE_ASCII  offset+0x30*5+20 ~SPWI506~
+   WRITE_SHORT  offset+0x30*6    206   //Protection from spell
+   WRITE_BYTE   offset+0x30*6+2  1     //TargetSelf
+   WRITE_BYTE   offset+0x30*6+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*6+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*6+18 100   //Probability 1
+   WRITE_ASCII  offset+0x30*6+20 ~SPWI914~
+   WRITE_SHORT  offset+0x30*7    206   //Protection from spell
+   WRITE_BYTE   offset+0x30*7+2  1     //TargetSelf
+   WRITE_BYTE   offset+0x30*7+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*7+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*7+18 100   //Probability 1
+   WRITE_ASCII  offset+0x30*7+20 ~SPWI928~
+   WRITE_SHORT  offset+0x30*8    206   //Protection from spell
+   WRITE_BYTE   offset+0x30*8+2  1     //TargetSelf
+   WRITE_BYTE   offset+0x30*8+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*8+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*8+18 100   //Probability 1
+   WRITE_ASCII  offset+0x30*8+20 ~SPWI943~
+
+   WRITE_SHORT  offset+0x30*9    296   //Protection from specific animation
+   WRITE_BYTE   offset+0x30*9+2  1     //TargetSelf
+   WRITE_BYTE   offset+0x30*9+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*9+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*9+18 100   //Probability 1
+   WRITE_ASCII  offset+0x30*9+20 ~SPMINDAT~
+
+   WRITE_SHORT  offset+0x30*10    142   //Display portrait icon
+   WRITE_BYTE   offset+0x30*10+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*10+8  52    //Mind shield
+   WRITE_BYTE   offset+0x30*10+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*10+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*10+18 100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*11    142   //Display portrait icon
+   WRITE_BYTE   offset+0x30*11+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*11+8  90    //Negative plane protection
+   WRITE_BYTE   offset+0x30*11+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*11+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*11+18 100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*12    267   //Disable display string
+   WRITE_BYTE   offset+0x30*12+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*12+4  41495    //StrRef
+   WRITE_BYTE   offset+0x30*12+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*12+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*12+18 100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*13    267   //Disable display string
+   WRITE_BYTE   offset+0x30*13+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*13+4  40968    //StrRef
+   WRITE_BYTE   offset+0x30*13+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*13+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*13+18 100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*14    267   //Disable display string
+   WRITE_BYTE   offset+0x30*14+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*14+4  40969    //StrRef
+   WRITE_BYTE   offset+0x30*14+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*14+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*14+18 100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*15    267   //Disable display string
+   WRITE_BYTE   offset+0x30*15+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*15+4  40979    //StrRef
+   WRITE_BYTE   offset+0x30*15+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*15+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*15+18 100   //Probability 1
+
+   WRITE_SHORT  offset+0x30*16    267   //Disable display string
+   WRITE_BYTE   offset+0x30*16+2  1     //TargetSelf
+   WRITE_LONG   offset+0x30*16+4  41616    //StrRef
+   WRITE_BYTE   offset+0x30*16+12 2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30*16+13 0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30*16+18 100   //Probability 1
+
+   WRITE_SHORT  0x70  "%glob_eff_cnt%"+18
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~NPSW04.ITM~ ~override~
+ READ_LONG  0x6a  "eff_offset"
+ READ_SHORT 0x70  "glob_eff_cnt"
+ WRITE_LONG 0x60  3                        //enchantment
+ FOR( cnt=0; cnt<"%glob_eff_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_BYTE ("%eff_offset%"+0x30*cnt) "eff_type"
+   PATCH_IF( "%eff_type%"=0 ) BEGIN        //Bonus to AC
+     WRITE_LONG ("%eff_offset%"+0x30*cnt+4)  3
+   END
+ END
+ READ_LONG   0x64 "ability_offset"
+ READ_SHORT  0x68 "ability_cnt"
+ FOR( cnt=0; cnt<"%ability_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_BYTE ("%ability_offset%"+0x38*cnt) "type"
+   PATCH_IF ("%type%"=1) BEGIN      //Melee
+     WRITE_SHORT ("%ability_offset%"+0x38*cnt+0x14) 3   //to hit
+     WRITE_SHORT ("%ability_offset%"+0x38*cnt+0x1a) 3   //damage bonus
+     READ_SHORT ("%ability_offset%"+cnt*0x38+0x1e)  eff_cnt
+     READ_SHORT ("%ability_offset%"+cnt*0x38+0x20)  eff_idx
+     FOR( cnt2=0; cnt2<eff_cnt; cnt2=cnt2+1 ) BEGIN
+       READ_SHORT ("%eff_offset%"+0x30*(cnt2+eff_idx))  "eff_type"
+       PATCH_IF( "%eff_type%"=25 ) BEGIN
+         WRITE_LONG ("%eff_offset%"+0x30*(cnt2+eff_idx)+4) 3   //damage amount
+       END
+       WRITE_LONG ("%eff_offset%"+0x30*(cnt2+eff_idx)+14) 18   //damage amount
+     END
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+STRING_SET 51945 @2035
+
+
+COPY_EXISTING ~RING08.ITM~ ~override~
+ READ_LONG  0x6a  "eff_offset"
+ READ_SHORT 0x70  "glob_eff_cnt"
+ PATCH_IF( "%glob_eff_cnt%"<=4 ) THEN BEGIN
+   SET offset = ("%eff_offset%"+0x30*"%glob_eff_cnt%")
+   INSERT_BYTES offset    0x30*2
+   WRITE_SHORT  offset           180   //Disallow item
+   WRITE_BYTE   offset+2         1     //TargetSelf
+   WRITE_LONG   offset+4         53012   //strref
+   WRITE_BYTE   offset+12        2     //Instant/While equipped
+   WRITE_BYTE   offset+13        0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+18        100   //Probability 1
+   WRITE_ASCII  offset+20        ~ULRING~
+
+   WRITE_SHORT  offset+0x30      180   //Disallow item
+   WRITE_BYTE   offset+0x30+2    1     //TargetSelf
+   WRITE_LONG   offset+0x30+4    53012   //strref
+   WRITE_BYTE   offset+0x30+12   2     //Instant/While equipped
+   WRITE_BYTE   offset+0x30+13   0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+0x30+18   100   //Probability 1
+   WRITE_ASCII  offset+0x30+20   ~TTRIN02~
+
+   WRITE_SHORT  0x70  "%glob_eff_cnt%"+2
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~RING09.ITM~         ~override~
+ READ_LONG  0x6a "eff_offset"
+ READ_SHORT 0x70 "eff_cnt"
+ SET found=0
+ FOR( cnt=0; cnt<"%eff_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_SHORT ("%eff_offset%"+0x30*cnt) "type"
+   PATCH_IF( "%type%" = 126 ) BEGIN               //movementrate bonus
+     SET found=1
+   END
+ END
+ PATCH_IF( found=0 ) THEN BEGIN
+   SET offset = ("%eff_offset%")
+   INSERT_BYTES offset    0x30
+   WRITE_SHORT  offset           126   //Movementrate bonus
+   WRITE_BYTE   offset+2         1     //TargetSelf
+   WRITE_LONG   offset+4         100   //strref
+   WRITE_BYTE   offset+8         2     //Instant/While equipped
+   WRITE_BYTE   offset+12        2     //Instant/While equipped
+   WRITE_BYTE   offset+13        0     //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+18        100   //Probability 1
+   WRITE_SHORT  0x70  "%eff_cnt%"+1
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~RINGWOLF.ITM~       ~override~
+ READ_LONG  0x6a  "eff_offset"
+ READ_SHORT 0x70  "glob_eff_cnt"
+ FOR( cnt=0; cnt<"%glob_eff_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_SHORT ("%eff_offset%"+0x30*cnt) "type"
+   PATCH_IF( "%type%" = 98 ) BEGIN             //regeneration
+     WRITE_LONG ("%eff_offset%"+0x30*cnt+4)  2  //value
+     WRITE_LONG ("%eff_offset%"+0x30*cnt+14) 0  //time
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~WA2DAK.ITM~         ~override~
+ READ_LONG  0x6a "eff_offset"
+ READ_SHORT 0x70 "eff_cnt"
+ SET found=0
+ FOR( cnt=0; cnt<"%eff_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_SHORT ("%eff_offset%"+0x30*cnt) "type"
+   PATCH_IF( "%type%" = 82 ) BEGIN
+     SET found=1
+   END
+ END
+ PATCH_IF( found=0 ) THEN BEGIN
+   SET offset = ("%eff_offset%")
+   INSERT_BYTES offset    0x30
+   WRITE_SHORT  offset      82        //Set AI script
+   WRITE_BYTE   offset+2    1         //TargetSelf
+   WRITE_BYTE   offset+8    5         //RACE script - was OVERRIDE previously
+   WRITE_BYTE   offset+12   2         //Instant/While equipped
+   WRITE_BYTE   offset+13   0         //Not Dispell/Bypass Resistance
+   WRITE_BYTE   offset+18   100       //Probability 1
+   WRITE_ASCII  offset+20   ~DAKKON1~ //script name
+   WRITE_SHORT  0x70  "%eff_cnt%"+1
+
+   READ_LONG  0x64 "ability_offset"
+   READ_SHORT 0x68 "ability_cnt"
+   FOR( cnt=0; cnt<"%ability_cnt%"; cnt=cnt+1 ) BEGIN
+     READ_SHORT  ("%ability_offset%"+0x38*cnt+0x20) idx
+     WRITE_SHORT ("%ability_offset%"+0x38*cnt+0x20) idx+1
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~WOLFWI2.ITM~        ~override~
+ WRITE_BYTE 0x3a   0              //remove item icon
+BUT_ONLY_IF_IT_CHANGES
+
+//***************************************************************************
+//***************************************************************************
+PRINT @2036
+
+
+APPEND ~TOOLTIP.2DA~ ~CYNICIS           66666660        77777770       77777771kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~FANMACE           66666661        77777772       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~FANSTAFF          66666662        77777772       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~FANSTAR           66666663         77777772       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~FANSWOR1          66666664        77777772       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~FANSWOR2          66666665         77777772       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~KISSGF            66666666        77777773       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~ROGUE             77777774        77777775       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~SCARAB            77777776        77777777       -1kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~SCEPTRE           66666667        77777778       77777779kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~ULRING            77777780        77777781       77777782kkkkkk~
+APPEND ~TOOLTIP.2DA~ ~WUJEN             66666668        77777783       -1kkkkkk~
+
+
+COPY_EXISTING ~TOOLTIP.2DA~ ~override~
+ //******** number of items in appended rows ***
+ SET present_cols = 4
+ //*********************************************
+ SET rows=2
+ SET rows_prev=0
+ SET col_cnt=0
+ WHILE "%rows%">1 BEGIN
+   col_cnt = col_cnt + 1
+   rows_prev = rows
+   COUNT_2DA_ROWS col_cnt rows
+ END
+ col_cnt = col_cnt - 1
+ SET ccc = col_cnt - 1
+
+ SPRINT str_add ""
+ FOR(cnt="%present_cols%"; cnt<"%col_cnt%"; cnt+=1) BEGIN
+   SPRINT str_add "%str_add%"^"         -1"
+ END
+ REPLACE_TEXTUALLY ~kkkkkk~ "%str_add%"
+
+ REPLACE ~66666660~ @2038
+ REPLACE ~77777770~ @2039
+ REPLACE ~77777771~ @2040
+ REPLACE ~66666661~ @2041
+ REPLACE ~77777772~ @2042
+ REPLACE ~66666662~ @2043
+ REPLACE ~66666663~ @2044
+ REPLACE ~66666664~ @2045
+ REPLACE ~66666665~ @2046
+ REPLACE ~66666666~ @2047
+ REPLACE ~77777773~ @2048
+ REPLACE ~77777774~ @2049
+ REPLACE ~77777775~ @2050
+ REPLACE ~77777776~ @2051
+ REPLACE ~77777777~ @2052
+ REPLACE ~66666667~ @2053
+ REPLACE ~77777778~ @2054
+ REPLACE ~77777779~ @2055
+ REPLACE ~77777780~ @2056
+ REPLACE ~77777781~ @2057
+ REPLACE ~77777782~ @2058
+ REPLACE ~66666668~ @2059
+ REPLACE ~77777783~ @2060
+
+
+
+COPY ~TS/itm/ARANRING.ITM~         ~override~
+ SAY NAME2 @2061
+ SAY DESC @2062
+
+COPY ~TS/itm/AXECHAR.ITM~        ~override~
+ SAY NAME2 @2063
+ SAY DESC @2064
+
+COPY ~TS/itm/BAG04TS.ITM~        ~override~
+     ~TS/itm/BAG05TS.ITM~        ~override~
+     ~TS/itm/BAG06TS.ITM~        ~override~
+
+COPY ~TS/itm/Beladona.itm~       ~override~
+ SAY NAME1 @2065
+ SAY NAME2 @2065
+ SAY UNIDENTIFIED_DESC @2066
+ SAY DESC @2066
+
+COPY ~TS/itm/BELTSTR.ITM~        ~override~
+ SAY NAME2 @2067
+ SAY DESC @2068
+
+COPY ~TS/itm/BESS.ITM~           ~override~
+ SAY NAME2 @2069
+ SAY DESC @2070
+
+COPY ~TS/itm/BISHOP.ITM~         ~override~
+ SAY NAME1 @2071
+ SAY NAME2 @2072
+ SAY UNIDENTIFIED_DESC @2073
+ SAY DESC @2074
+
+COPY ~TS/itm/BLACKNIG.itm~       ~override~
+ SAY NAME2 @2075
+ SAY DESC @2076
+
+COPY ~TS/itm/BLCKBOW.ITM~        ~override~
+ SAY NAME2 @2077
+ SAY DESC @2078
+
+COPY ~TS/itm/BOOTFOR.ITM~        ~override~
+ SAY NAME2 @2079
+ SAY DESC @2080
+  
+COPY ~TS/itm/BORING.ITM~        ~override~
+     ~TS/itm/EDVEN.ITM~         ~override~
+ SAY NAME2 @2081
+  
+COPY ~TS/itm/BOWHAMM.ITM~        ~override~
+ SAY NAME2 @2082
+ SAY DESC @2083
+
+COPY ~TS/itm/CYNICIS.ITM~        ~override~
+ SAY NAME2 @2038
+ SAY DESC @2084
+  
+COPY ~TS/itm/DAXE.ITM~          ~override~
+     ~TS/itm/DPLATE.ITM~        ~override~
+     ~TS/itm/DSHLD.ITM~         ~override~
+     ~TS/itm/ELEMHYD1.ITM~      ~override~
+
+COPY ~TS/itm/ELEMKATA.ITM~       ~override~
+ SAY NAME2 @2085
+ SAY DESC @2086
+                 
+COPY ~TS/itm/ELEMKATE.ITM~       ~override~
+ SAY NAME2 @2087
+ SAY DESC @2088
+
+COPY ~TS/itm/ELEMKATF.ITM~       ~override~
+ SAY NAME2 @2089
+ SAY DESC @2090
+
+COPY ~TS/itm/ELEMKATW.ITM~       ~override~
+ SAY NAME2 @2091
+ SAY DESC @2092
+
+COPY ~TS/itm/EXITWARD.ITM~       ~override~
+ SAY NAME2 @2093
+ SAY DESC @2094
+
+COPY ~TS/itm/FANMACE.ITM~        ~override~
+     ~TS/itm/FANPOTN1.ITM~       ~override~
+     ~TS/itm/FANPOTN2.ITM~       ~override~
+     ~TS/itm/FANPOTN3.ITM~       ~override~
+     ~TS/itm/FANRING.ITM~        ~override~
+     ~TS/itm/FANROBE.ITM~        ~override~
+     ~TS/itm/FANSTAFF.ITM~       ~override~
+     ~TS/itm/FANSTAR.ITM~        ~override~
+     ~TS/itm/FANSWOR1.ITM~       ~override~
+     ~TS/itm/FANSWOR2.ITM~       ~override~
+              
+COPY ~TS/itm/GODBLESS.ITM~       ~override~
+ SAY NAME2 @2095
+ SAY DESC @2096
+              
+COPY ~TS/itm/HELMSUN.ITM~        ~override~
+ SAY NAME2 @2097
+ SAY DESC @2098
+
+COPY ~TS/itm/KASWOR01.ITM~       ~override~
+ SAY NAME2 @2099
+ SAY DESC @2100
+
+COPY ~TS/itm/KASWOR02.ITM~       ~override~
+ SAY NAME2 @2101
+ SAY DESC @2102
+               
+COPY ~TS/itm/KEDL.ITM~           ~override~
+ SAY NAME2 @2103
+ SAY DESC @2104
+
+COPY ~TS/itm/KEYBRON.ITM~        ~override~
+ SAY NAME2 @2105
+ SAY UNIDENTIFIED_DESC @2106
+ SAY DESC @2106
+
+COPY ~TS/itm/KEYCOPP.ITM~        ~override~
+ SAY NAME2 @2107
+ SAY UNIDENTIFIED_DESC @2108
+ SAY DESC @2108
+
+COPY ~TS/itm/KEYDUNG.ITM~        ~override~
+ SAY NAME2 @2109
+ SAY UNIDENTIFIED_DESC @2110
+ SAY DESC @2110
+
+COPY ~TS/itm/KEYELEC.ITM~        ~override~
+ SAY NAME2 @2111
+ SAY UNIDENTIFIED_DESC @2112
+ SAY DESC @2112
+
+COPY ~TS/itm/KEYGOLD.ITM~        ~override~
+ SAY NAME2 @2113
+ SAY UNIDENTIFIED_DESC @2114
+ SAY DESC @2114
+
+COPY ~TS/itm/KEYPLAT.ITM~        ~override~
+ SAY NAME2 @2115
+ SAY UNIDENTIFIED_DESC @2116
+ SAY DESC @2116
+
+COPY ~TS/itm/KEYSILV.ITM~        ~override~
+ SAY NAME2 @2117
+ SAY UNIDENTIFIED_DESC @2118
+ SAY DESC @2118
+
+COPY ~TS/itm/KISSGF.ITM~         ~override~
+ SAY NAME2 @2047
+ SAY DESC @2119
+
+COPY ~TS/itm/KNIGHT.ITM~         ~override~
+ SAY NAME1 @2071
+ SAY NAME2 @2120
+ SAY UNIDENTIFIED_DESC @2073
+ SAY DESC @2121
+                
+COPY ~TS/itm/MAILLIF.ITM~        ~override~
+ SAY NAME2 @2122
+ SAY DESC @2123
+                              
+COPY ~TS/itm/MASAKIIM.ITM~       ~override~
+                             
+COPY ~TS/itm/MISCBSIM.ITM~       ~override~
+ SAY NAME1 @2124
+ SAY NAME2 @2124
+ SAY UNIDENTIFIED_DESC @2125
+ SAY DESC @2125
+
+COPY ~TS/itm/MYSTERY.ITM~        ~override~
+ SAY NAME2 @2126
+ SAY DESC @2127
+
+COPY ~TS/itm/NAMJI.ITM~          ~override~
+ SAY NAME2 @2128
+ SAY DESC @2129
+	                
+COPY ~TS/itm/NITRITE.ITM~        ~override~
+ SAY NAME2 @2130
+ SAY DESC @2131
+	               
+COPY ~TS/itm/NPRing02.ITM~       ~override~
+ SAY NAME2 @2132
+ SAY DESC @2133
+
+COPY ~TS/itm/OGI.ITM~            ~override~
+ SAY NAME2 @2134
+ SAY DESC @2135
+
+COPY ~TS/itm/Otakoam.itm~        ~override~
+ SAY NAME1 @2136
+ SAY NAME2 @2136
+ SAY UNIDENTIFIED_DESC @2137
+ SAY DESC @2137
+	               
+COPY ~TS/itm/PEST.ITM~           ~override~
+ SAY NAME2 @2138
+ SAY DESC @2139
+
+COPY ~TS/itm/PitRope.itm~        ~override~
+ SAY NAME2 @2140
+ SAY UNIDENTIFIED_DESC @2141
+ SAY DESC @2141
+
+COPY ~TS/itm/PurStaff.itm~       ~override~
+ SAY DESC @2142
+               
+COPY ~TS/itm/RINGED.ITM~         ~override~
+ SAY NAME2 @2143
+ SAY DESC @2144
+
+COPY ~TS/itm/RINGELF.ITM~        ~override~
+ SAY NAME1 @2145
+ SAY NAME2 @2146
+ SAY DESC @2147
+	               
+COPY ~TS/itm/ROBEARM.ITM~        ~override~
+ SAY NAME2 @2148
+ SAY DESC @2149
+ 	               
+COPY ~TS/itm/ROGUE.ITM~          ~override~
+ SAY NAME1 @2150
+ SAY NAME2 @2151
+ SAY UNIDENTIFIED_DESC @2152
+ SAY DESC @2153
+                 
+COPY ~TS/itm/SCARAB.ITM~         ~override~
+ SAY NAME2 @2154
+ SAY DESC @2155
+
+COPY ~TS/itm/SCEPTRE.ITM~        ~override~
+ SAY NAME2 @2053
+ SAY DESC @2156
+               
+COPY ~TS/itm/SeaChart.itm~       ~override~
+
+COPY ~TS/itm/SIAMUL.ITM~         ~override~
+ SAY NAME2 @2157
+ SAY DESC @2158
+
+COPY ~TS/itm/SiCloak.ITM~        ~override~
+ SAY NAME2 @2159
+ SAY DESC @2160
+                
+COPY ~TS/itm/SiLeat.itm~         ~override~
+ SAY NAME2 @2161
+ SAY DESC @2162
+
+COPY ~TS/itm/SIMACE1.ITM~        ~override~
+ SAY NAME2 @2163
+ SAY DESC @2164
+
+COPY ~TS/itm/SiMace2.ITM~        ~override~
+ SAY NAME2 @2165
+ SAY DESC @2166
+
+COPY ~TS/itm/SISLING.ITM~        ~override~
+ SAY NAME2 @2167
+ SAY DESC @2168
+
+COPY ~TS/itm/SpRing.itm~         ~override~
+
+COPY ~TS/itm/TimeWard.itm~       ~override~
+ SAY NAME2 @2169
+
+COPY ~TS/itm/TRRIN02.ITM~        ~override~
+ SAY NAME2 @2170
+ SAY DESC @2171
+
+COPY ~TS/itm/ULRING.ITM~         ~override~
+ SAY NAME2 @2172
+ SAY DESC @2173
+
+COPY ~TS/itm/USPOT1A.ITM~        ~override~
+ SAY NAME2 @2174
+ SAY 0x176 @2175
+
+COPY ~TS/itm/USPOT3C.ITM~        ~override~
+ SAY NAME2 @2176
+ SAY 0x176 @2177
+
+COPY ~TS/itm/USPOT4B.ITM~        ~override~
+ SAY NAME2 @2178
+ SAY 0x176 @2179
+
+COPY ~TS/itm/USPOT4C.ITM~        ~override~
+ SAY NAME2 @2180
+ SAY 0x176 @2181
+
+COPY ~TS/itm/USPOT5B.ITM~        ~override~
+ SAY NAME2 @2182
+ SAY 0x176 @2183
+
+COPY ~TS/itm/ValNeck1.ITM~       ~override~
+     ~TS/itm/ValNeck2.ITM~       ~override~
+ SAY NAME2 @2184
+ SAY DESC @2185
+	                           
+COPY ~TS/itm/WA2DAK2.ITM~        ~override~
+ SAY NAME2 @2186
+ SAY DESC @2187
+
+COPY ~TS/itm/WA2DAK3.ITM~        ~override~
+ SAY NAME2 @2186
+ SAY DESC @2188
+
+COPY ~TS/itm/WA2DAK4.ITM~        ~override~
+ SAY NAME2 @2186
+ SAY DESC @2189
+
+COPY ~TS/itm/WA2DAK5.ITM~        ~override~
+ SAY NAME2 @2186
+ SAY DESC @2190
+
+COPY ~TS/itm/WOLF.itm~           ~override~
+ SAY NAME1 @2191
+ SAY NAME2 @2191
+ SAY UNIDENTIFIED_DESC @2192
+
+COPY ~TS/itm/WOLFBELT.itm~       ~override~
+     ~TS/itm/WOLFRING.itm~       ~override~
+
+COPY ~TS/itm/WUHALTAI.ITM~       ~override~
+ SAY NAME2 @2193
+ SAY DESC @2194
+
+COPY ~TS/itm/WUJEN.ITM~          ~override~
+ SAY DESC @2195
+
+
+///////////////////////////////////////////////////
+//Update 03-02-2006
+///////////////////////////////////////////////////
+COPY ~TS/itm/SW2H07BG.ITM~           ~override~
+ SAY DESC @2400
+
+
+///////////////////////////////
+//Creatures
+//////////////////////////////
+PRINT @2196
+
+
+COPY_EXISTING ~VALYG8.CRE~       ~override~
+ READ_LONG  0x2a0  "known_spells_offset"
+ READ_LONG  0x2a4  "known_spells_num"
+ READ_LONG  0x2a8  "spell_memorization_offset"
+ READ_LONG  0x2ac  "spell_memorization_num"
+ READ_LONG  0x2b0  "spell_memorized_offset"
+ READ_LONG  0x2b4  "spell_memorized_num"
+ READ_LONG  0x2b8  "item_slots_offset"
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ READ_LONG  0x2c4  "effects_offset"
+ READ_LONG  0x2c8  "effects_num"
+
+ SET exists=0
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "VALNECK1")=0 ) BEGIN
+     SET exists=1
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "BOW03")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "BLCKBOW"
+   END
+ END
+
+ PATCH_IF( exists=0 ) BEGIN
+   SET offset = "%items_offset%" + 0x14*"%items_num%"
+   INSERT_BYTES offset            0x14*3
+   WRITE_ASCII  offset            ~VALNECK1~
+   WRITE_ASCII  offset+0x14       ~AROW01~
+   WRITE_SHORT  offset+0x14+10    20
+   WRITE_ASCII  offset+0x14*2     ~AROW01~
+   WRITE_SHORT  offset+0x14*2+10  20
+   WRITE_LONG   0x2c0    "%items_num%"+3
+
+   SET "info_ext"=0x14*3
+   PATCH_IF ("%known_spells_offset%">="%items_offset%") BEGIN
+     "known_spells_offset"="%known_spells_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a0 "%known_spells_offset%"
+   END
+   PATCH_IF ("%spell_memorization_offset%">="%items_offset%") BEGIN
+     "spell_memorization_offset"="%spell_memorization_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a8  "%spell_memorization_offset%"
+   END
+   PATCH_IF ("%spell_memorized_offset%">="%items_offset%") BEGIN
+     "spell_memorized_offset"="%spell_memorized_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b0  "%spell_memorized_offset%"
+   END
+   PATCH_IF ("%item_slots_offset%">="%items_offset%") BEGIN
+     "item_slots_offset"="%item_slots_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b8  "%item_slots_offset%"
+   END
+   PATCH_IF ("%effects_offset%">="%items_offset%") BEGIN
+     "effects_offset"="%effects_offset%"+"%info_ext%"
+     WRITE_LONG  0x2c4  "%effects_offset%"
+   END
+
+   SET offset = "%item_slots_offset%" + 2*6    //amulet slot
+   WRITE_SHORT offset "%items_num%"
+   SET offset = "%item_slots_offset%" + 2*14   //quiver 2 slot
+   WRITE_SHORT offset "%items_num%"+1
+   SET offset = "%item_slots_offset%" + 2*15   //quiver 3 slot
+   WRITE_SHORT offset "%items_num%"+2
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~VALYG9.CRE~       ~override~
+ READ_LONG  0x2a0  "known_spells_offset"
+ READ_LONG  0x2a4  "known_spells_num"
+ READ_LONG  0x2a8  "spell_memorization_offset"
+ READ_LONG  0x2ac  "spell_memorization_num"
+ READ_LONG  0x2b0  "spell_memorized_offset"
+ READ_LONG  0x2b4  "spell_memorized_num"
+ READ_LONG  0x2b8  "item_slots_offset"
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ READ_LONG  0x2c4  "effects_offset"
+ READ_LONG  0x2c8  "effects_num"
+
+ SET exists=0
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "VALNECK1")=0 ) BEGIN
+     SET exists=1
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "AROW01")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "AROW02"
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "BOW03")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "BLCKBOW"
+   END
+ END
+
+ PATCH_IF( exists=0 ) BEGIN
+   SET offset = "%items_offset%" + 0x14*"%items_num%"
+   INSERT_BYTES offset            0x14*3
+   WRITE_ASCII  offset            ~VALNECK1~
+   WRITE_ASCII  offset+0x14       ~AROW11~
+   WRITE_SHORT  offset+0x14+10    20
+   WRITE_ASCII  offset+0x14*2     ~AROW08~
+   WRITE_SHORT  offset+0x14*2+10  20
+   WRITE_LONG   0x2c0    "%items_num%"+3
+
+   SET "info_ext"=0x14*3
+   PATCH_IF ("%known_spells_offset%">="%items_offset%") BEGIN
+     "known_spells_offset"="%known_spells_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a0 "%known_spells_offset%"
+   END
+   PATCH_IF ("%spell_memorization_offset%">="%items_offset%") BEGIN
+     "spell_memorization_offset"="%spell_memorization_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a8  "%spell_memorization_offset%"
+   END
+   PATCH_IF ("%spell_memorized_offset%">="%items_offset%") BEGIN
+     "spell_memorized_offset"="%spell_memorized_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b0  "%spell_memorized_offset%"
+   END
+   PATCH_IF ("%item_slots_offset%">="%items_offset%") BEGIN
+     "item_slots_offset"="%item_slots_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b8  "%item_slots_offset%"
+   END
+   PATCH_IF ("%effects_offset%">="%items_offset%") BEGIN
+     "effects_offset"="%effects_offset%"+"%info_ext%"
+     WRITE_LONG  0x2c4  "%effects_offset%"
+   END
+
+   SET offset = "%item_slots_offset%" + 2*6    //amulet slot
+   WRITE_SHORT offset "%items_num%"
+   SET offset = "%item_slots_offset%" + 2*14   //quiver 2 slot
+   WRITE_SHORT offset "%items_num%"+1
+   SET offset = "%item_slots_offset%" + 2*15   //quiver 3 slot
+   WRITE_SHORT offset "%items_num%"+2
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~VALYG11.CRE~       ~override~
+ READ_LONG  0x2a0  "known_spells_offset"
+ READ_LONG  0x2a4  "known_spells_num"
+ READ_LONG  0x2a8  "spell_memorization_offset"
+ READ_LONG  0x2ac  "spell_memorization_num"
+ READ_LONG  0x2b0  "spell_memorized_offset"
+ READ_LONG  0x2b4  "spell_memorized_num"
+ READ_LONG  0x2b8  "item_slots_offset"
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ READ_LONG  0x2c4  "effects_offset"
+ READ_LONG  0x2c8  "effects_num"
+
+ SET exists=0
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "VALNECK1")=0 ) BEGIN
+     SET exists=1
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "AROW01")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "AROW10"
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "BOW03")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "BLCKBOW"
+   END
+ END
+
+ PATCH_IF( exists=0 ) BEGIN
+   SET offset = "%items_offset%" + 0x14*"%items_num%"
+   INSERT_BYTES offset            0x14*3
+   WRITE_ASCII  offset            ~VALNECK1~
+   WRITE_ASCII  offset+0x14       ~AROW1A~
+   WRITE_SHORT  offset+0x14+10    20
+   WRITE_ASCII  offset+0x14*2     ~AROW08~
+   WRITE_SHORT  offset+0x14*2+10  20
+   WRITE_LONG   0x2c0    "%items_num%"+3
+
+   SET "info_ext"=0x14*3
+   PATCH_IF ("%known_spells_offset%">="%items_offset%") BEGIN
+     "known_spells_offset"="%known_spells_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a0 "%known_spells_offset%"
+   END
+   PATCH_IF ("%spell_memorization_offset%">="%items_offset%") BEGIN
+     "spell_memorization_offset"="%spell_memorization_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a8  "%spell_memorization_offset%"
+   END
+   PATCH_IF ("%spell_memorized_offset%">="%items_offset%") BEGIN
+     "spell_memorized_offset"="%spell_memorized_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b0  "%spell_memorized_offset%"
+   END
+   PATCH_IF ("%item_slots_offset%">="%items_offset%") BEGIN
+     "item_slots_offset"="%item_slots_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b8  "%item_slots_offset%"
+   END
+   PATCH_IF ("%effects_offset%">="%items_offset%") BEGIN
+     "effects_offset"="%effects_offset%"+"%info_ext%"
+     WRITE_LONG  0x2c4  "%effects_offset%"
+   END
+
+   SET offset = "%item_slots_offset%" + 2*6    //amulet slot
+   WRITE_SHORT offset "%items_num%"
+   SET offset = "%item_slots_offset%" + 2*14   //quiver 2 slot
+   WRITE_SHORT offset "%items_num%"+1
+   SET offset = "%item_slots_offset%" + 2*15   //quiver 3 slot
+   WRITE_SHORT offset "%items_num%"+2
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~VALYG12.CRE~       ~override~
+ READ_LONG  0x2a0  "known_spells_offset"
+ READ_LONG  0x2a4  "known_spells_num"
+ READ_LONG  0x2a8  "spell_memorization_offset"
+ READ_LONG  0x2ac  "spell_memorization_num"
+ READ_LONG  0x2b0  "spell_memorized_offset"
+ READ_LONG  0x2b4  "spell_memorized_num"
+ READ_LONG  0x2b8  "item_slots_offset"
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ READ_LONG  0x2c4  "effects_offset"
+ READ_LONG  0x2c8  "effects_num"
+
+ SET exists=0
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "VALNECK1")=0 ) BEGIN
+     SET exists=1
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "AROW01")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "AROW10"
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "BOW03")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "BLCKBOW"
+   END
+ END
+
+ PATCH_IF( exists=0 ) BEGIN
+   SET offset = "%items_offset%" + 0x14*"%items_num%"
+   INSERT_BYTES offset            0x14*3
+   WRITE_ASCII  offset            ~VALNECK1~
+   WRITE_ASCII  offset+0x14       ~AROW11~
+   WRITE_SHORT  offset+0x14+10    20
+   WRITE_ASCII  offset+0x14*2     ~AROW08~
+   WRITE_SHORT  offset+0x14*2+10  20
+   WRITE_LONG   0x2c0    "%items_num%"+3
+
+   SET "info_ext"=0x14*3
+   PATCH_IF ("%known_spells_offset%">="%items_offset%") BEGIN
+     "known_spells_offset"="%known_spells_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a0 "%known_spells_offset%"
+   END
+   PATCH_IF ("%spell_memorization_offset%">="%items_offset%") BEGIN
+     "spell_memorization_offset"="%spell_memorization_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a8  "%spell_memorization_offset%"
+   END
+   PATCH_IF ("%spell_memorized_offset%">="%items_offset%") BEGIN
+     "spell_memorized_offset"="%spell_memorized_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b0  "%spell_memorized_offset%"
+   END
+   PATCH_IF ("%item_slots_offset%">="%items_offset%") BEGIN
+     "item_slots_offset"="%item_slots_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b8  "%item_slots_offset%"
+   END
+   PATCH_IF ("%effects_offset%">="%items_offset%") BEGIN
+     "effects_offset"="%effects_offset%"+"%info_ext%"
+     WRITE_LONG  0x2c4  "%effects_offset%"
+   END
+
+   SET offset = "%item_slots_offset%" + 2*6    //amulet slot
+   WRITE_SHORT offset "%items_num%"
+   SET offset = "%item_slots_offset%" + 2*14   //quiver 2 slot
+   WRITE_SHORT offset "%items_num%"+1
+   SET offset = "%item_slots_offset%" + 2*15   //quiver 3 slot
+   WRITE_SHORT offset "%items_num%"+2
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~VALYG14.CRE~       ~override~
+ READ_LONG  0x2a0  "known_spells_offset"
+ READ_LONG  0x2a4  "known_spells_num"
+ READ_LONG  0x2a8  "spell_memorization_offset"
+ READ_LONG  0x2ac  "spell_memorization_num"
+ READ_LONG  0x2b0  "spell_memorized_offset"
+ READ_LONG  0x2b4  "spell_memorized_num"
+ READ_LONG  0x2b8  "item_slots_offset"
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ READ_LONG  0x2c4  "effects_offset"
+ READ_LONG  0x2c8  "effects_num"
+
+ SET exists=0
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "VALNECK1")=0 ) BEGIN
+     SET exists=1
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "AROW01")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "AROW10"
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "AROW02")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "AROW15"
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "AROW11")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "AROW06"
+   END
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "BOW17")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "BLCKBOW"
+   END
+ END
+
+ PATCH_IF( exists=0 ) BEGIN
+   SET offset = "%items_offset%" + 0x14*"%items_num%"
+   INSERT_BYTES offset            0x14
+   WRITE_ASCII  offset            ~VALNECK1~
+   WRITE_LONG   0x2c0    "%items_num%"+1
+
+   SET "info_ext"=0x14
+   PATCH_IF ("%known_spells_offset%">="%items_offset%") BEGIN
+     "known_spells_offset"="%known_spells_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a0 "%known_spells_offset%"
+   END
+   PATCH_IF ("%spell_memorization_offset%">="%items_offset%") BEGIN
+     "spell_memorization_offset"="%spell_memorization_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a8  "%spell_memorization_offset%"
+   END
+   PATCH_IF ("%spell_memorized_offset%">="%items_offset%") BEGIN
+     "spell_memorized_offset"="%spell_memorized_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b0  "%spell_memorized_offset%"
+   END
+   PATCH_IF ("%item_slots_offset%">="%items_offset%") BEGIN
+     "item_slots_offset"="%item_slots_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b8  "%item_slots_offset%"
+   END
+   PATCH_IF ("%effects_offset%">="%items_offset%") BEGIN
+     "effects_offset"="%effects_offset%"+"%info_ext%"
+     WRITE_LONG  0x2c4  "%effects_offset%"
+   END
+
+   SET offset = "%item_slots_offset%" + 2*6    //amulet slot
+   WRITE_SHORT offset "%items_num%"
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~ANOMEN6.CRE~       ~override~
+              ~ANOMEN7.CRE~       ~override~
+              ~ANOMEN8.CRE~       ~override~
+              ~ANOMEN9.CRE~       ~override~
+              ~ANOMEN10.CRE~      ~override~
+              ~ANOMEN12.CRE~      ~override~
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "BLUN04")=0 OR ("%name%" STRING_COMPARE_CASE "BLUN33")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "BESS"  #8
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~BODHI.CRE~        ~override~
+              ~BODHI2.CRE~       ~override~
+              ~BODHIAMB.CRE~     ~override~
+              ~C6BODHI.CRE~      ~override~
+              ~PPBODHI4.CRE~     ~override~
+ WRITE_ASCII 0x34  ~BODHIS~ #8   //portraits
+ WRITE_ASCII 0x3c  ~BODHIL~ #8
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~FIRORC03.CRE~     ~override~
+              ~SARBUL04.CRE~     ~override~
+              ~SARGRD04.CRE~     ~override~
+              ~SARGRD10.CRE~     ~override~
+ WRITE_SHORT 0x28   0xE800       //animation IC_ORC_MELEE1 instead of IC_ORC_MELEE3
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~PPBODHI3.CRE~     ~override~
+ WRITE_ASCII 0x34  ~BODHIS~ #8   //portraits
+ WRITE_ASCII 0x3c  ~BODHIL~ #8
+ WRITE_BYTE  0x272  2             //Elf
+ WRITE_BYTE  0x275  2             //Female
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "VAMPREG2")=0 ) BEGIN
+     WRITE_ASCII ("%items_offset%"+0x14*cnt)  "BORING"  #8
+   END
+ END
+BUT_ONLY_IF_IT_CHANGES
+
+
+COPY_EXISTING ~YOSHI7.CRE~       ~override~
+              ~YOSHI8.CRE~       ~override~
+              ~YOSHI10.CRE~      ~override~
+              ~YOSHI11.CRE~      ~override~
+              ~YOSHI12.CRE~      ~override~
+ READ_LONG  0x2a0  "known_spells_offset"
+ READ_LONG  0x2a4  "known_spells_num"
+ READ_LONG  0x2a8  "spell_memorization_offset"
+ READ_LONG  0x2ac  "spell_memorization_num"
+ READ_LONG  0x2b0  "spell_memorized_offset"
+ READ_LONG  0x2b4  "spell_memorized_num"
+ READ_LONG  0x2b8  "item_slots_offset"
+ READ_LONG  0x2bc  "items_offset"
+ READ_LONG  0x2c0  "items_num"
+ READ_LONG  0x2c4  "effects_offset"
+ READ_LONG  0x2c8  "effects_num"
+
+ SET exists=0
+ FOR( cnt=0; cnt<"%items_num%"; cnt=cnt+1 ) BEGIN       //items loop
+   READ_ASCII ("%items_offset%"+0x14*cnt)  "name"
+   PATCH_IF ( ("%name%" STRING_COMPARE_CASE "ROGUE")=0 ) BEGIN
+     SET exists=1
+   END
+ END
+
+ PATCH_IF( exists=0 ) BEGIN
+   SET offset = "%items_offset%" + 0x14*"%items_num%"
+   INSERT_BYTES offset            0x14
+   WRITE_ASCII  offset            ~ROGUE~
+   WRITE_LONG   0x2c0    "%items_num%"+1
+
+   SET "info_ext"=0x14
+   PATCH_IF ("%known_spells_offset%">="%items_offset%") BEGIN
+     "known_spells_offset"="%known_spells_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a0 "%known_spells_offset%"
+   END
+   PATCH_IF ("%spell_memorization_offset%">="%items_offset%") BEGIN
+     "spell_memorization_offset"="%spell_memorization_offset%"+"%info_ext%"
+     WRITE_LONG  0x2a8  "%spell_memorization_offset%"
+   END
+   PATCH_IF ("%spell_memorized_offset%">="%items_offset%") BEGIN
+     "spell_memorized_offset"="%spell_memorized_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b0  "%spell_memorized_offset%"
+   END
+   PATCH_IF ("%item_slots_offset%">="%items_offset%") BEGIN
+     "item_slots_offset"="%item_slots_offset%"+"%info_ext%"
+     WRITE_LONG  0x2b8  "%item_slots_offset%"
+   END
+   PATCH_IF ("%effects_offset%">="%items_offset%") BEGIN
+     "effects_offset"="%effects_offset%"+"%info_ext%"
+     WRITE_LONG  0x2c4  "%effects_offset%"
+   END
+
+   SET offset = "%item_slots_offset%"    //helmet slot
+   WRITE_SHORT offset "%items_num%"
+ END
+BUT_ONLY_IF_IT_CHANGES
+//***************************************************************************
+//***************************************************************************
+
+PRINT @2197
+
+ACTION_IF NOT FILE_EXISTS ~data/BG1ARE.BIF~       //BGT compatibility
+THEN BEGIN
+ COPY ~TS/cre/CHESS.cre~        ~override~
+   SAY NAME1 @2198
+   SAY NAME2 @2198
+END
+
+
+COPY ~TS/cre/Aino.CRE~          ~override~
+     ~TS/cre/AinoA.CRE~         ~override~
+  SAY NAME1 @2199
+  SAY NAME2 @2200
+
+COPY ~TS/cre/Alome.CRE~         ~override~
+  SAY NAME1 @2201
+  SAY NAME2 @2202
+
+COPY ~TS/cre/BASILL.cre~        ~override~
+  SAY NAME1 @2203
+  SAY NAME2 @2203
+
+COPY ~TS/cre/BISHOP1.cre~       ~override~
+     ~TS/cre/BISHOP.cre~        ~override~
+  SAY NAME1 @2204
+  SAY NAME2 @2204
+
+COPY ~TS/cre/BKnight.cre~       ~override~
+  SAY NAME1 @2205
+  SAY NAME2 @2205
+
+COPY ~TS/cre/CDMaid1.cre~      ~override~
+     ~TS/cre/CDMaid2.cre~      ~override~
+     ~TS/cre/CDMaid3.cre~      ~override~
+     ~TS/cre/CDMaid4.cre~      ~override~
+     ~TS/cre/CDMaid5.cre~      ~override~
+  SAY NAME1 @2206
+  SAY NAME2 @2206
+
+COPY ~TS/cre/Chrdrag.cre~      ~override~
+  SAY NAME1 @2207
+  SAY NAME2 @2207
+    
+COPY ~TS/cre/ChrDrag2.cre~     ~override~
+  SAY NAME1 @2208
+  SAY NAME2 @2208
+    
+COPY ~TS/cre/Coran10.cre~      ~override~
+COPY ~TS/cre/Coran8.cre~       ~override~
+COPY ~TS/cre/Coran9.cre~       ~override~
+COPY ~TS/cre/DEADKEF.CRE~      ~override~
+COPY ~TS/cre/DEADKEM.CRE~      ~override~
+COPY ~TS/cre/DYNA10.CRE~       ~override~
+COPY ~TS/cre/DYNA12.CRE~       ~override~
+COPY ~TS/cre/DYNA13.CRE~       ~override~
+COPY ~TS/cre/DynaheiS.cre~     ~override~
+
+COPY ~TS/cre/Elemwag.cre~      ~override~
+  SAY NAME1 @2209
+  SAY NAME2 @2209
+    
+COPY ~TS/cre/GZombie.cre~      ~override~
+  SAY NAME1 @2210
+  SAY NAME2 @2210
+
+COPY ~TS/cre/HHealer.cre~      ~override~
+  SAY NAME1 @2028
+  SAY NAME2 @2028
+
+COPY ~TS/cre/Hitomi.cre~       ~override~
+  SAY NAME1 @2211
+  SAY NAME2 @2212
+  
+COPY ~TS/cre/HKensaF.cre~      ~override~
+     ~TS/cre/HKensai.CRE~      ~override~
+  SAY NAME1 @2213
+  SAY NAME2 @2213
+
+COPY ~TS/cre/Kachi08.cre~      ~override~
+     ~TS/cre/Kachi09.cre~      ~override~
+     ~TS/cre/Kachi10.cre~      ~override~
+     ~TS/cre/Kachi11.cre~      ~override~
+     ~TS/cre/Kachi12.cre~      ~override~
+     ~TS/cre/Kachi13.cre~      ~override~
+     ~TS/cre/KachikoD.cre~     ~override~
+     ~TS/cre/KachikoS.cre~     ~override~
+  SAY NAME1 @2214
+  SAY NAME2 @2214
+  SAY LEADER @2215 
+  SAY BATTLE_CRY1 @2216 
+  SAY BATTLE_CRY2 @2217 
+  SAY TIRED @2218 
+  SAY 0xdc @2219 
+  SAY DAMAGE @2220 
+  SAY DYING @2221 
+  SAY HURT @2222 
+  SAY AREA_DUNGEON @2223 
+  SAY AREA_FOREST @2224 
+  SAY AREA_DAY @2225 
+  SAY AREA_NIGHT @2226 
+  SAY SELECT_COMMON1 @2227 
+  SAY SELECT_COMMON2 @2228 
+  SAY SELECT_COMMON3 @2229 
+  SAY SELECT_COMMON4 @2230 
+  SAY SELECT_COMMON5 @2231 
+  SAY SELECT_COMMON6 @2232 
+  SAY SELECT_ACTION1 @2233 
+  SAY SELECT_ACTION2 @2234
+  SAY SELECT_ACTION3 @2235 
+  SAY SELECT_ACTION4 @2236 
+  SAY CRITICAL_HIT @2217 
+  SAY CRITICAL_MISS @2237
+  SAY TARGET_IMMUNE @2238 
+  SAY INVENTORY_FULL @2239 
+  SAY SPELL_DISRUPTED @2240 
+  SAY BIO @2241
+
+COPY~TS/cre/KING.cre~         ~override~
+  SAY NAME1 @2242
+  SAY NAME2 @2242
+ 
+COPY ~TS/cre/KNIGHT.cre~       ~override~
+     ~TS/cre/KNIGHT1.cre~      ~override~
+  SAY NAME1 @2243
+  SAY NAME2 @2243
+
+COPY ~TS/cre/Loveone5.cre~     ~override~   //full recreation of an empty BG2 CRE
+  SAY NAME1 @2244
+  SAY NAME2 @2244
+    
+COPY ~TS/cre/Loveone6.cre~     ~override~
+  SAY NAME1 @2245
+  SAY NAME2 @2245
+    
+COPY ~TS/cre/Lulu.CRE~         ~override~
+  SAY NAME1 @2246
+  SAY NAME2 @2247
+
+COPY ~TS/cre/Masaki.cre~       ~override~
+  SAY NAME1 @2248
+  SAY NAME2 @2249
+  
+COPY ~TS/cre/Mask.cre~         ~override~
+  SAY NAME1 @2250
+  SAY NAME2 @2250
+ 
+COPY ~TS/cre/Michio.cre~       ~override~
+  SAY NAME1 @2251
+  SAY NAME2 @2252
+
+COPY ~TS/cre/Momoko.cre~       ~override~
+  SAY NAME1 @2253
+  SAY NAME2 @2254
+  
+COPY ~TS/cre/Najoki.cre~       ~override~
+     ~TS/cre/NajokiA.cre~      ~override~
+  SAY NAME1 @2255
+  SAY NAME2 @2256
+
+COPY ~TS/cre/Nanny.cre~        ~override~
+  SAY NAME1 @2257
+  SAY NAME2 @2257
+ 
+COPY ~TS/cre/NKensai.cre~      ~override~
+  SAY NAME1 @2258
+  SAY NAME2 @2258
+
+COPY ~TS/cre/NKLeader.cre~     ~override~
+  SAY NAME1 @2259
+  SAY NAME2 @2259
+
+COPY ~TS/cre/NMonk.cre~        ~override~
+  SAY NAME1 @2260
+  SAY NAME2 @2260
+ 
+COPY ~TS/cre/Ogi.CRE~          ~override~
+  SAY NAME1 @2261
+  SAY NAME2 @2262
+
+COPY ~TS/cre/Otako.CRE~        ~override~
+  SAY NAME1 @2263
+  SAY NAME2 @2264
+ 
+COPY ~TS/cre/PAWN.cre~         ~override~
+  SAY NAME1 @2265
+  SAY NAME2 @2265
+ 
+COPY ~TS/cre/PPARAN.CRE~       ~override~
+
+COPY ~TS/cre/Purang.cre~       ~override~
+  SAY NAME1 @2266
+  SAY NAME2 @2266
+  
+COPY ~TS/cre/QUEEN.CRE~        ~override~
+  SAY NAME1 @2267
+  SAY NAME2 @2267
+ 
+COPY ~TS/cre/ROOK.cre~         ~override~
+  SAY NAME1 @2268
+  SAY NAME2 @2268
+ 
+COPY ~TS/cre/Sasaki.cre~       ~override~
+  SAY NAME1 @2269
+  SAY NAME2 @2270
+  
+COPY ~TS/cre/Sime06.cre~       ~override~
+     ~TS/cre/Sime07.cre~       ~override~
+     ~TS/cre/Sime08.cre~       ~override~
+     ~TS/cre/Sime09.cre~       ~override~
+     ~TS/cre/Sime10.cre~       ~override~
+     ~TS/cre/Sime109.cre~      ~override~
+     ~TS/cre/Sime110.cre~      ~override~
+     ~TS/cre/Sime121.cre~      ~override~
+     ~TS/cre/SimeDr.cre~       ~override~
+     ~TS/cre/SimeSl.cre~       ~override~
+  SAY NAME1 @2271
+  SAY NAME2 @2271
+  SAY 0xa8 @2272 
+  SAY 0xac @2273 
+  SAY 0xb0 @2274 
+  SAY 0xb4 @2275 
+  SAY 0xb8 @2276 
+  SAY LEADER @2277 
+  SAY BATTLE_CRY1 @2278 
+  SAY BATTLE_CRY2 @2279 
+  SAY BATTLE_CRY3 @2280 
+  SAY TIRED @2281 
+  SAY 0xc4 @2282 
+  SAY DYING @2283 
+  SAY HURT @2284 
+  SAY AREA_CITY @2285  
+  SAY AREA_DUNGEON @2286 
+  SAY AREA_FOREST @2287 
+  SAY AREA_DAY @2288 
+  SAY AREA_NIGHT @2289 
+  SAY SELECT_COMMON1 @2290 
+  SAY SELECT_COMMON2 @2291
+  SAY SELECT_COMMON3 @2292 
+  SAY SELECT_COMMON4 @2293 
+  SAY SELECT_COMMON5 @2294 
+  SAY SELECT_COMMON6 @2295
+  SAY SELECT_ACTION1 @2296 
+  SAY SELECT_ACTION2 @2297 
+  SAY SELECT_ACTION3 @2298 
+  SAY SELECT_ACTION4 @2299 
+  SAY SELECT_ACTION5 @2300 
+  SAY SELECT_ACTION6 @2301 
+  SAY 0x1a0 @2302 
+  SAY 0x1a4 @2303 
+  SAY CRITICAL_HIT @2304 
+  SAY CRITICAL_MISS @2305 
+  SAY TARGET_IMMUNE @2306 
+  SAY INVENTORY_FULL @2307
+  SAY SPELL_DISRUPTED @2308 
+  SAY BIO @2309
+
+COPY ~TS/cre/Sol.cre~          ~override~
+  SAY NAME1 @2310
+  SAY NAME2 @2310
+ 
+COPY ~TS/cre/Sola.cre~         ~override~
+  SAY NAME1 @2311
+  SAY NAME2 @2311
+
+COPY ~TS/cre/Solauf.cre~       ~override~
+  SAY NAME1 @2312
+  SAY NAME2 @2312
+
+COPY ~TS/cre/StoneVF.cre~      ~override~
+     ~TS/cre/StoneVM.cre~      ~override~
+  SAY NAME1 @2313
+  SAY NAME2 @2313
+    
+COPY ~TS/cre/Undken.cre~       ~override~
+  SAY NAME1 @2259
+  SAY NAME2 @2259
+  
+COPY ~TS/cre/VampSime.cre~     ~override~
+  SAY NAME1 @2271
+  SAY NAME2 @2271
+    
+COPY ~TS/cre/Vampval.cre~      ~override~
+COPY ~TS/cre/VPAran.cre~       ~override~
+
+COPY ~TS/cre/WBishop.cre~      ~override~
+  SAY NAME1 @2314
+  SAY NAME2 @2314
+    
+COPY ~TS/cre/Wolf.cre~         ~override~
+  SAY NAME1 @2315
+  SAY NAME2 @2315
+
+COPY ~TS/cre/veter2.cre~         ~override~    //from TS 6.06
+  SAY NAME1 @2315
+  SAY NAME2 @2315
+
+COPY ~TS/cre/YoshimoA.cre~     ~override~
+  SAY NAME1 @2316
+  SAY NAME2 @2316
+
+COPY~TS/cre/Yoshmess.cre~     ~override~
+  SAY NAME1 @2317
+  SAY NAME2 @2317
+
+
+
+
+//*****************************************************************************************
+//*** GUI Switcher v 2.0
+//*****************************************************************************************
+PRINT @2001
+
+<<<<<<<< new_gui_switcher.tp2
+BACKUP ~GUI_Mods/Backup~
+AUTHOR ~King Diamond~
+
+>>>>>>>>
+<<<<<<<< GUI_Mods.2DA
+NEXT_AVAILABLE_MOD_SLOT      1
+CURRENT_ACTIVE_MOD_GUI       0
+RESERVED2                    -1
+RESERVED3                    -1
+RESERVED4                    -1
+RESERVED5                    -1
+RESERVED6                    -1
+RESERVED7                    -1
+RESERVED8                    -1
+RESERVED9                    -1
+>>>>>>>>
+<<<<<<<< orig_gui.tp2
+//***********************************************************************************
+BEGIN ~"Original SoA/ToB"~
+SUBCOMPONENT ~Game Graphical User Interface (GUI)~
+
+COPY_EXISTING ~GUI_Mods/GUI_Mods.2DA~ ~GUI_Mods~
+ SET_2DA_ENTRY  1 1 2    0   //CURRENT_ACTIVE_MOD_GUI
+AT_EXIT ~Setup-GUI.exe --uninstall~
+
+>>>>>>>>
+<<<<<<<< mod_gui.tp2
+//***********************************************************************************
+BEGIN ~"Tortured Souls"~
+SUBCOMPONENT ~Game Graphical User Interface (GUI)~
+
+COPY_EXISTING ~GUI_Mods/GUI_Mods.2DA~ ~GUI_Mods~
+ SET_2DA_ENTRY  1 1 2   "%gui_slot_name%"  //CURRENT_ACTIVE_MOD_GUI
+COPY ~GUI_Mods/%gui_slot_name%~  ~override~
+
+//***********************************************************************************
+BEGIN ~"Tortured Souls" - just nice in-game Fonts~
+
+COPY ~GUI_Mods/%gui_slot_name%/Fonts~  ~override~
+
+>>>>>>>>
+
+ACTION_IF NOT FILE_EXISTS ~Setup-GUI.tp2~
+THEN BEGIN
+  MKDIR ~GUI_Mods~
+  COPY ~Setup-TS-BP.exe~ ~Setup-GUI.exe~
+  COPY ~GUI_Mods.2DA~ ~GUI_Mods/GUI_Mods.2DA~
+  COPY ~new_gui_switcher.tp2~ ~Setup-GUI.tp2~
+   APPEND_FILE ~orig_gui.tp2~
+END
+ELSE BEGIN
+  COPY_EXISTING - ~GUI_Mods/GUI_Mods.2DA~ ~GUI_Mods~
+   READ_2DA_ENTRY 1 1 2 "active_gui"   //CURRENT_ACTIVE_MOD_GUI
+
+  ACTION_IF ("%active_gui%">0) THEN BEGIN
+    UNINSTALL ~Setup-GUI.tp2~ ~%active_gui%~
+  END
+END
+
+OUTER_SET gui_slot_name=0
+COPY_EXISTING ~GUI_Mods/GUI_Mods.2DA~ ~GUI_Mods~
+ READ_2DA_ENTRY 0 1 2 gui_slot_name
+ SET_2DA_ENTRY  0 1 2 gui_slot_name+1  //NEXT_AVAILABLE_MOD_SLOT
+
+COPY_EXISTING ~Setup-GUI.tp2~ ~Setup-GUI.tp2~
+ APPEND_FILE_EVALUATE ~mod_gui.tp2~
+
+MKDIR ~GUI_Mods/%gui_slot_name%~
+MKDIR ~GUI_Mods/%gui_slot_name%/Fonts~
+COPY ~TS/gui~ ~GUI_Mods/%gui_slot_name%~
+COPY ~TS/gui/Fonts~ ~GUI_Mods/%gui_slot_name%/Fonts~
+//*****************************************************************************************
+//*****************************************************************************************
+
+//////////////////////////////
+//Adding music
+//////////////////////////////
+PRINT @2026
+
+COPY ~TS/music/MxKachi.mus~ ~music~
+     ~TS/music/MxSimel.mus~ ~music~
+     ~TS/music/MxValyg.mus~ ~music~
+
+OUTER_SET ts_song_rows_cnt=0
+COPY_EXISTING - ~SONGLIST.2da~ ~override~
+ COUNT_2DA_ROWS 3 "ts_song_rows_cnt"
+
+ACTION_IF ("%ts_song_rows_cnt%"<=97) THEN BEGIN
+  APPEND ~SONGLIST.2da~ ~99990      Kachiko         MXKACHI.MUS~
+  APPEND ~SONGLIST.2da~ ~99991      Valygar         MXVALYG.MUS~
+  APPEND ~SONGLIST.2da~ ~99992      Sime            MXSIMEL.MUS~
+
+  COPY_EXISTING ~SONGLIST.2da~  ~override~
+   SET kachiko = "%ts_song_rows_cnt%"
+   REPLACE_TEXTUALLY ~99990~    "%kachiko%"
+   SET valygar = "%ts_song_rows_cnt%"+1
+   REPLACE_TEXTUALLY ~99991~    "%valygar%"
+   SET sime = "%ts_song_rows_cnt%"+2
+   REPLACE_TEXTUALLY ~99992~    "%sime%"
+
+   COPY_EXISTING ~KACHIKO.BCS~  ~override~
+                 ~KACH25.BCS~   ~override~
+                 ~KACHI25D.BCS~ ~override~
+                 ~KACHID.BCS~   ~override~
+    REPLACE_TEXTUALLY ~999999~ "%kachiko%"
+
+   COPY_EXISTING ~SIME.BCS~    ~override~
+                 ~SIMED.BCS~   ~override~
+   REPLACE_TEXTUALLY ~999999~ "%sime%"
+
+   COPY_EXISTING ~VALYGAR.BCS~    ~override~
+                 ~VALY25.BCS~     ~override~
+                 ~VALYG25D.BCS~   ~override~
+                 ~VALYGARD.BCS~   ~override~
+    REPLACE_TEXTUALLY ~999999~ "%valygar%"
+END
+ELSE BEGIN
+  //SONGLIST.2DA has less than 8 free slots - we must move the whole music setup to the GUI auto-mod
+  MKDIR ~GUI_Mods/%gui_slot_name%/sound~
+  COPY ~TS/rules/default/SONGLIST.2DA~ ~GUI_Mods/%gui_slot_name%/sound/SONGLIST.2DA~
+
+<<<<<<<< sound1.tp2
+OUTER_SET ts_song_rows_cnt=0
+COPY_EXISTING ~GUI_Mods/%gui_slot_name%/sound/SONGLIST.2DA~ ~override~
+ COUNT_2DA_ROWS 3 "ts_song_rows_cnt"
+
+>>>>>>>>
+<<<<<<<< sound2.tp2
+APPEND ~SONGLIST.2da~ ~99990      Kachiko         MXKACHI.MUS~
+APPEND ~SONGLIST.2da~ ~99991      Valygar         MXVALYG.MUS~
+APPEND ~SONGLIST.2da~ ~99992      Sime            MXSIMEL.MUS~
+
+COPY_EXISTING ~SONGLIST.2da~  ~override~
+ SET kachiko = "%ts_song_rows_cnt%"
+ REPLACE_TEXTUALLY ~99990~    "%kachiko%"
+ SET valygar = "%ts_song_rows_cnt%"+1
+ REPLACE_TEXTUALLY ~99991~    "%valygar%"
+ SET sime = "%ts_song_rows_cnt%"+2
+ REPLACE_TEXTUALLY ~99992~    "%sime%"
+
+COPY_EXISTING ~KACHIKO.BCS~  ~override~
+              ~KACH25.BCS~   ~override~
+              ~KACHI25D.BCS~ ~override~
+              ~KACHID.BCS~   ~override~
+ REPLACE_TEXTUALLY ~999999~ "%kachiko%"
+
+COPY_EXISTING ~SIME.BCS~    ~override~
+              ~SIMED.BCS~   ~override~
+ REPLACE_TEXTUALLY ~999999~ "%sime%"
+
+COPY_EXISTING ~VALYGAR.BCS~    ~override~
+              ~VALY25.BCS~     ~override~
+              ~VALYG25D.BCS~   ~override~
+              ~VALYGARD.BCS~   ~override~
+ REPLACE_TEXTUALLY ~999999~ "%valygar%"
+//***********************************************************************************
+
+>>>>>>>>
+
+  COPY_EXISTING ~Setup-GUI.tp2~ ~Setup-GUI.tp2~
+   APPEND_FILE_EVALUATE ~sound.tp2~
+   APPEND_FILE ~sound2.tp2~
+END //ELSE
+
+
+
+AT_INTERACTIVE_EXIT ~TS/TSAreasSounds.bat~
+AT_INTERACTIVE_UNINSTALL ~TS/TSUninstaller.bat~
+//EOF
