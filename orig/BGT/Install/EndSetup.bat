@@ -467,6 +467,18 @@ copy "%BG1PATH%\music\PDay\PDaya.ACM" music\PDay\PDaya.ACM
 md music\PNite
 copy "%BG1PATH%\music\PNite\PNitea.ACM" music\PNite\PNitea.ACM
 
+md music\Tav5
+copy "%BG1PATH%\music\Tav1\Tav1a.ACM" music\Tav5\Tav5a.ACM
+
+md music\Tav6
+copy "%BG1PATH%\music\Tav2\Tav2a.ACM" music\Tav6\Tav6a.ACM
+
+md music\Tav7
+copy "%BG1PATH%\music\Tav3\Tav3a.ACM" music\Tav7\Tav7a.ACM
+
+md music\Tav8
+copy "%BG1PATH%\music\Tav4\Tav4a.ACM" music\Tav8\Tav8a.ACM
+
 md music\TDay1
 copy "%BG1PATH%\music\TDay1\TDay1a.ACM" music\TDay1\TDay1a.ACM
 

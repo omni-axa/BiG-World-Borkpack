@@ -21,7 +21,7 @@ BACKUP ~BGT/Backup~
 
 AUTHOR ~http://forums.spellholdstudios.net/index.php?showforum=261~
 
-VERSION ~1.10 (28 August 10)~
+VERSION ~1.11 (January 2011)~
 
 README ~BGT/Help/[%LANGUAGE%]BGTReadme.htm~
 
@@ -3980,6 +3980,17 @@ COPY ~BGT/Modify/ITM/SW1H18.ITM~ ~override/SW1H18.ITM~
   WRITE_BYTE 0x26 12 //Minimum strength
   WRITE_BYTE 0x31 89 //Weapon proficiency
 
+  WRITE_ASCII 0x3a ~ISW1HBAL~
+
+  READ_LONG 0x64 abil_off
+  READ_SHORT 0x68 abil_num
+  FOR (i = 0; i < "%abil_num%"; i += 1) BEGIN
+    READ_BYTE (%abil_off% + %i% * 0x38) abil_type
+    PATCH_IF (%abil_type% = 1) BEGIN //Melee
+      WRITE_ASCII (%abil_off% + %i% * 0x38 + 0x4) ~ISW1HBAL~
+    END
+  END
+
 COPY ~BGT/Modify/ITM/SW1H19.ITM~ ~override/SW1H19.ITM~
   READ_LONG 0x64 abil_off
   READ_SHORT 0x68 abil_num
@@ -7921,7 +7932,7 @@ COPY_EXISTING ~ALIGNMNT.2DA~ ~override~
 BUT_ONLY_IF_IT_CHANGES
 
 COPY_EXISTING ~LOREBON.2DA~ ~override~
-  SET_2DA_ENTRY 14 1 2 ~3~ // Wisdom 15 correction
+  SET_2DA_ENTRY 15 1 2 ~3~ // Wisdom 15 correction
 BUT_ONLY_IF_IT_CHANGES
 
 COPY_EXISTING ~SKILLRAC.2DA~ ~override~
@@ -7932,7 +7943,7 @@ COPY_EXISTING ~SKILLRAC.2DA~ ~override~
 BUT_ONLY_IF_IT_CHANGES
 
 COPY_EXISTING ~SKILLRNG.2DA~ ~override~
-  SET_2DA_ENTRY 1 1 2 ~21~
+  SET_2DA_ENTRY 2 1 2 ~21~
 BUT_ONLY_IF_IT_CHANGES
 
 //////////////////////////////////////////////////////////////////
@@ -8453,6 +8464,45 @@ THEN BEGIN
    APPEND_FILE ~BGT/orig_gui.tp2~
 END
 ELSE BEGIN
+  ACTION_IF NOT FILE_CONTAINS ~Setup-GUI.tp2~ ~LANGUAGE~
+  THEN BEGIN
+    COPY_EXISTING ~Setup-GUI.tp2~ ~Setup-GUI.tp2~
+      REPLACE_TEXTUALLY "AUTHOR ~King Diamond~"
+      "AUTHOR ~King Diamond~
+
+LANGUAGE ~English~
+         ~English~
+         ~BGT/Language/English/prompts.tra~
+LANGUAGE ~Castellano (Castilian/Spanish)~
+         ~Castilian~
+         ~BGT/Language/Castilian/prompts.tra~
+LANGUAGE ~Francais (French)~
+         ~French~
+         ~BGT/Language/French/prompts.tra~
+LANGUAGE ~Deutsch (German)~
+         ~German~
+         ~BGT/Language/German/prompts.tra~
+LANGUAGE ~Italiano (Italian)~
+         ~Italian~
+         ~BGT/Language/Italian/prompts.tra~
+LANGUAGE ~ÇÑ±¹¾î (Korean)~
+         ~Korean~
+         ~BGT/Language/Korean/prompts.tra~
+LANGUAGE ~Polski (Polish)~
+         ~Polish~
+         ~BGT/Language/Polish/prompts.tra~
+LANGUAGE ~ãááª¨© (Russian)~
+         ~Russian~
+         ~BGT/Language/Russian/prompts.tra~
+LANGUAGE ~¼òÌåÖÐÎÄ (Chinese - Simplified)~
+         ~SChinese~
+         ~BGT/Language/SChinese/prompts.tra~
+LANGUAGE %ÁcÅé¤¤¤å (Chinese - Traditional)%
+         ~TChinese~
+         ~BGT/Language/TChinese/prompts.tra"
+    BUT_ONLY_IF_IT_CHANGES
+  END
+
   OUTER_SET active_gui=0
   COPY_EXISTING - ~GUI_Mods/GUI_Mods.2DA~ ~GUI_Mods~
    READ_2DA_ENTRY 1 1 2 "active_gui"   //CURRENT_ACTIVE_MOD_GUI
