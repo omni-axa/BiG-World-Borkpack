@@ -1,5 +1,5 @@
---- Setup-BGT.tp2	Fri May 07 23:30:21 2010
-+++ C:\BWP Patchstudio\patched files\Setup-BGT.tp2	Sat May 08 16:05:09 2010
+--- C:/Documents and Settings/Chaithanya/BiG-World-Borkpack/orig/Setup-BGT.tp2	Sun Jan 02 11:19:14 2011
++++ C:/Documents and Settings/Chaithanya/BiG-World-Borkpack/patched/Setup-BGT.tp2	Tue Jan 04 20:39:07 2011
 @@ -150,13 +150,13 @@
  // chitin.key and override backup
  ///////////////////////////////////////////////////////
