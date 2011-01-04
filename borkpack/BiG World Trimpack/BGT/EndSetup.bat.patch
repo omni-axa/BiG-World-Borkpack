@@ -1,6 +1,6 @@
 --- BGT\Install\EndSetup.bat	Sat May 08 00:27:48 2010
 +++ C:\BWP Patchstudio\patched files\BGT\Install\EndSetup.bat	Sat May 08 16:27:10 2010
-@@ -1496,3485 +1496,3501 @@
+@@ -1508,3485 +1508,3501 @@
  more BGT\Language\%LANGUAGE1%\EndSetup\011.txt
  
  md BG1ARE
