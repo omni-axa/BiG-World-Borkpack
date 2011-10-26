@@ -2,7 +2,10 @@
 BACKUP ~Bonehillv275/backup~ 
 AUTHOR ~SirBillyBob@gmail.com and erebusant@verizon.net~
 
-VERSION ~v2.75a~
+VERSION ~v2.75b~
+
+// Isaya: readme at the beginning of installation, if missing in a language, use English
+README ~bonehillv275/language/%LANGUAGE%/ReadMe-Bonehill.html~ ~bonehillv275/language/english/ReadMe-Bonehill.html~
 
 AUTO_TRA ~bonehillv275/Language/%s/D~
 
@@ -30,6 +33,11 @@ LANGUAGE
          ~Spanish - Translated by Ancalagon el Negro~
          ~spanish~
          ~bonehillv275/Language/spanish/setup.tra~
+
+LANGUAGE 
+         ~Francais - Traduit par Lothringen (des d'Oghmatiques)~
+         ~french~
+         ~bonehillv275/Language/french/setup.tra~
 
 BEGIN @0
 
@@ -2001,5 +2009,4 @@ END
 
 
 AT_INTERACTIVE_EXIT ~bonehillv275/BHAreas.bat~
-AT_EXIT ~VIEW bonehillv275/language/%LANGUAGE%/ReadMe-Bonehill.html~
 AT_INTERACTIVE_UNINSTALL ~bonehillv275/BHUninstaller.bat~

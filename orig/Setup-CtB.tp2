@@ -7896,7 +7896,7 @@ BUT_ONLY_IF_IT_CHANGES  //******************************************************
 
 
 COPY_EXISTING ~AR0309.ARE~ ~override~
- WRITE_ASCII 0x94 ~AR0805~ #8  //area script (KD) - just to make sure it's set
+ WRITE_ASCII 0x94 ~AR0309~ #8  //area script (KD) - just to make sure it's set
  READ_LONG  0x54  "actors_offset"
  READ_SHORT 0x58  "actors_num"
  READ_SHORT 0x5a  "infotrig_num"

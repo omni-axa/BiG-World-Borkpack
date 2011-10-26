@@ -21,7 +21,7 @@ BACKUP ~BGT/Backup~
 
 AUTHOR ~http://forums.spellholdstudios.net/index.php?showforum=261~
 
-VERSION ~1.11 (January 2011)~
+VERSION ~1.12 (12 Jun 2011)~
 
 README ~BGT/Help/[%LANGUAGE%]BGTReadme.htm~
 
@@ -130,6 +130,9 @@ COPY + ~BGT/PreLanguage.txt~ ~BGT/Language.txt~
 ACTION_IF (~%argv[0]%~ STRING_CONTAINS_REGEXP ~[Pp]~) = 0 THEN BEGIN
   COPY ~BGT/PreLanguage.txt~ ~BGT/Autopath.txt~
     REPLACE_TEXTUALLY ~aaa~ ~%argv[1]%~
+    
+    //get angry at stupid people who put in stupid characters
+    REPLACE_TEXTUALLY ~[*?"<>|:]~ ~~
 END
 
 COPY ~BGT/Place.txt~ ~BGT/Input.txt~
@@ -5819,8 +5822,7 @@ ELSE BEGIN
     SAY 0x1a0 @500040
     SAY 0x1CC @10233
     WRITE_SHORT 0x244 0 //unused in KITLIST.2DA designation
-    WRITE_BYTE 0x246 ~%kit_bit%~ //change to Charming Rogue Kit as per KITLIST.2DA row
-    WRITE_BYTE 0x247 0x40 //force kit to use KITLIST.2DA
+    WRITE_SHORT 0x246 0x4000 + ~%kit_bit%~ //change to Charming Rogue Kit as per KITLIST.2DA row
 END
 
 //Compatibility with NeJ: Custom Jaheira Kit
@@ -5932,8 +5934,7 @@ ELSE BEGIN
     SAY 0x194 @4039
     SAY 0x1CC @10199
     WRITE_SHORT 0x244 0 //unused in KITLIST.2DA designation
-    WRITE_BYTE 0x246 ~%kit_bit%~ //change to Priest of Sylvanus Kit as per KITLIST.2DA row
-    WRITE_BYTE 0x247 0x40 //force kit to use KITLIST.2DA
+    WRITE_SHORT 0x246 0x4000 + ~%kit_bit%~ //change to Priest of Sylvanus as per KITLIST.2DA row
 END
 
 //Compatibility with BG2 Fixpack
@@ -8499,7 +8500,7 @@ LANGUAGE ~ºÚÃÂ÷–Œƒ (Chinese - Simplified)~
          ~BGT/Language/SChinese/prompts.tra~
 LANGUAGE %¡c≈È§§§Â (Chinese - Traditional)%
          ~TChinese~
-         ~BGT/Language/TChinese/prompts.tra"
+         ~BGT/Language/TChinese/prompts.tra~"
     BUT_ONLY_IF_IT_CHANGES
   END
 
