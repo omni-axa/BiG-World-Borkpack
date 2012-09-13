@@ -1,6 +1,6 @@
---- setup-planarspheremod.tp2	Wed Mar 26 13:40:08 2008
-+++ C:\BWP Patchstudio\patched files\setup-planarspheremod.tp2	Sat Apr 17 08:45:49 2010
-@@ -24,10 +24,10 @@
+--- setup-planarspheremod.tp2	Sun May 01 17:34:17 2011
++++ C:\BWP Patchstudio\patched files\setup-planarspheremod.tp2	Wed Sep 12 00:01:56 2012
+@@ -29,10 +29,10 @@
  
  COPY + ~Setup-PlanarSphereMod.exe~ ~WeiDU.exe~
  

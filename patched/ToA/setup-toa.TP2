@@ -1,6 +1,6 @@
 BACKUP ~ToA/Backup~
 AUTHOR ~Naurandir (Weidued by White Agnus)~
-VERSION ~v2.2~
+VERSION ~v2.3~
 
 README ~ToA/readme.%LANGUAGE%.txt~
 
@@ -15,6 +15,11 @@ LANGUAGE ~English by Headbanger~
          ~English~
          ~ToA/language/english/setup.tra~
          ~ToA/language/english/journal.tra~
+
+LANGUAGE ~Italian by ilot~
+         ~italian~
+         ~ToA/language/italian/setup.tra~
+         ~ToA/language/italian/journal.tra~
 
 BEGIN @1 DESIGNATED 01
 // MKDIR ~ToA/over.bak~

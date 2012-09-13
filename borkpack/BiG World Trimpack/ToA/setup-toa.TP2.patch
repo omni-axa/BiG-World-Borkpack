@@ -1,7 +1,7 @@
---- ToA\setup-toa.TP2	Wed Nov 04 22:54:57 2009
-+++ C:\BWP Patchstudio\patched files\ToA\setup-toa.TP2	Sat Apr 17 10:31:05 2010
-@@ -17,18 +17,18 @@
-          ~ToA/language/english/journal.tra~
+--- ToA\setup-toa.TP2	Fri Jan 06 20:49:24 2012
++++ C:\BWP Patchstudio\patched files\ToA\setup-toa.TP2	Wed Sep 12 00:00:05 2012
+@@ -22,18 +22,18 @@
+          ~ToA/language/italian/journal.tra~
  
  BEGIN @1 DESIGNATED 01
 -MKDIR ~ToA/over.bak~
