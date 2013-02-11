@@ -1,0 +1,368 @@
+BACKUP ~CtB/Chores/backup~
+
+AUTHOR ~Charles Bisson, King Diamond (revision)~  NO_IF_EVAL_BUG
+
+VERSION ~2.2~
+
+AUTO_TRA ~CtB/Language/%s~
+
+LANGUAGE ~English~  ~english~  ~CtB/Language/English/wsetup.tra~  ~CtB/Language/English/script.tra~
+LANGUAGE ~Russian~  ~russian~  ~CtB/Language/Russian/wsetup.tra~  ~CtB/Language/Russian/script.tra~
+LANGUAGE ~French~   ~french~   ~CtB/Language/French/wsetup.tra~   ~CtB/Language/French/script.tra~
+LANGUAGE ~Italian~  ~italian~  ~CtB/Language/Italian/wsetup.tra~  ~CtB/Language/Italian/script.tra~
+LANGUAGE ~German~   ~german~   ~CtB/Language/German/wsetup.tra~   ~CtB/Language/German/script.tra~
+LANGUAGE ~Castellano (clan REO)~   ~Spanish~   ~CtB/Language/Spanish/wsetup.tra~   ~CtB/Language/Spanish/script.tra~
+//***********************************************************************************
+// Candlekeep Chores component
+//***********************************************************************************
+BEGIN ~Candlekeep Chores~
+REQUIRE_COMPONENT "Setup-CtB.tp2"      "0"  ~You must have CtB v1.12 main package installed~
+
+COPY + ~chitin.key~ ~CtB/chitin.cho~
+
+MKDIR ~CTB-CHRS~
+
+//to allow area scripts to run before AR0602 with active chores cut off section
+APPEND ~MASTAREA.2DA~
+~AR3500  value
+AR3501  value
+AR3502  value
+AR3503  value
+AR3504  value
+AR3505  value
+AR3506  value
+AR3513  value~
+
+
+ACTION_IF FILE_EXISTS ~data/BG1ARE.BIF~   //BGT-WeiDU compatibility
+THEN BEGIN
+  COPY_EXISTING ~AR0602.bcs~ ~override~
+   REPLACE_BCS_BLOCK ~CtB/Chores/Compat/BGT/x0602.BAF~ ~CtB/Chores/Compat/BGT/r0602.BAF~
+   REPLACE_BCS_BLOCK ~CtB/Chores/Compat/BGT/x0602tw.BAF~ ~CtB/Chores/Compat/BGT/r0602tw.BAF~  //BGT Tweak #20
+//   REPLACE_BCS_BLOCK ~CtB/Chores/Compat/BGT/x0602_G3.BAF~ ~CtB/Chores/Compat/BGT/r0602.BAF~
+END
+ELSE BEGIN
+  COPY_EXISTING ~AR0602.bcs~ ~override~
+   REPLACE_BCS_BLOCK ~CtB/Chores/Compat/CtB/x0602.BAF~ ~CtB/Chores/Compat/CtB/r0602.BAF~
+//   REPLACE_BCS_BLOCK ~CtB/Chores/Compat/CtB/x0602_G3.BAF~ ~CtB/Chores/Compat/CtB/r0602.BAF~
+END
+
+
+//***********************************************************
+PRINT ~Installing new areas...~
+//***********************************************************
+COPY ~CtB/Chores/tis~ ~override~
+
+
+COPY ~CtB/Chores/ctbareas/nostring~ ~override~
+
+COPY ~CtB/Chores/ctbareas/translate/AR3500.ARE~ ~override~
+  SAY 0xd30 @154
+  SAY 0xdf4 @155
+  SAY 0xeb8 @154
+  SAY 0xf7c @157
+  SAY 0x1104 @154
+  SAY 0x1414 @159
+  SAY 0x18ac @155
+
+COPY ~CtB/Chores/ctbareas/translate/AR3502.ARE~ ~override~
+  SAY 0xa78 @161
+  SAY 0xb3c @162
+  SAY 0xc00 @163
+  SAY 0xcc4 @164
+  SAY 0xd88 @165
+  SAY 0xe4c @166
+  SAY 0xf10 @167
+  SAY 0xfd4 @168
+  SAY 0x1098 @169
+  SAY 0x115c @170
+  SAY 0x1220 @171
+  SAY 0x12e4 @172
+  SAY 0x13a8 @173
+  SAY 0x146c @174
+  SAY 0x1530 @175
+  SAY 0x15f4 @176
+  SAY 0x16b8 @177
+  SAY 0x177c @178
+  SAY 0x1840 @179
+  SAY 0x1904 @180
+  SAY 0x19c8 @181
+  SAY 0x1a8c @182
+  SAY 0x1b50 @183
+  SAY 0x1c14 @184
+  SAY 0x1cd8 @185
+
+COPY ~CtB/Chores/ctbareas/translate/AR3505.ARE~ ~override~
+  SAY 0x8f0 @154
+
+//***********************************************************
+PRINT ~Installing new creatures...~
+
+COPY ~CtB/Chores/creature/nostring~ ~override~
+COPY ~CtB/Chores/creature/translate/CB502LBR.CRE~ ~override~ SAY NAME1 @6    SAY NAME2 @6
+COPY ~CtB/Chores/creature/translate/CBMILKMD.CRE~ ~override~ SAY NAME1 @54   SAY NAME2 @54
+
+//***********************************************************
+PRINT ~Installing new scripts...~
+
+COMPILE ~CtB/Chores/scripts~ USING ~CtB/%s/script.tra~
+
+//***********************************************************
+PRINT ~Installing dialogues...~
+
+COMPILE ~CtB/Chores/dialogs~
+
+//***********************************************************
+PRINT ~Installing new items...~
+
+COPY ~CtB/Chores/items/nostring~ ~override~
+
+COPY ~CtB/Chores/items/translate/CBLINENF.ITM~ ~override~
+  SAY NAME1 @650349
+  SAY NAME2 @650349
+  SAY UNIDENTIFIED_DESC @650350
+  SAY DESC @650350
+COPY ~CtB/Chores/items/translate/CBLINENP.ITM~ ~override~
+  SAY NAME1 @650351
+  SAY NAME2 @650351
+  SAY UNIDENTIFIED_DESC @650352
+  SAY DESC @650352
+COPY ~CtB/Chores/items/translate/CBMLKBKE.ITM~ ~override~
+  SAY NAME1 @650381
+  SAY NAME2 @650381
+  SAY UNIDENTIFIED_DESC @650382
+  SAY DESC @650382
+COPY ~CtB/Chores/items/translate/CBMLKBKF.ITM~ ~override~
+  SAY NAME1 @650381
+  SAY NAME2 @650381
+  SAY UNIDENTIFIED_DESC @650383
+  SAY DESC @650383
+COPY ~CtB/Chores/items/translate/CBPOWDR1.ITM~ ~override~
+  SAY NAME1 @650464
+  SAY NAME2 @650465
+  SAY UNIDENTIFIED_DESC @650466
+  SAY DESC @650467
+COPY ~CtB/Chores/items/translate/CBPOWDR2.ITM~ ~override~
+  SAY NAME1 @650464
+  SAY NAME2 @650468
+  SAY UNIDENTIFIED_DESC @650466
+  SAY DESC @650469
+COPY ~CtB/Chores/items/translate/CBPOWDR3.ITM~ ~override~
+  SAY NAME1 @650464
+  SAY NAME2 @650470
+  SAY UNIDENTIFIED_DESC @650466
+  SAY DESC @650471
+COPY ~CtB/Chores/items/translate/CBPOWDR4.ITM~ ~override~
+  SAY NAME1 @650464
+  SAY NAME2 @650472
+  SAY UNIDENTIFIED_DESC @650466
+  SAY DESC @650473
+COPY ~CtB/Chores/items/translate/CBPOWDR5.ITM~ ~override~
+  SAY NAME1 @650464
+  SAY NAME2 @650474
+  SAY UNIDENTIFIED_DESC @650466
+  SAY DESC @650475
+COPY ~CtB/Chores/items/translate/CBPOWDR6.ITM~ ~override~
+  SAY NAME1 @650464
+  SAY NAME2 @650476
+  SAY UNIDENTIFIED_DESC @650466
+  SAY DESC @650477
+
+
+COPY ~CtB/Chores/items/translate/CBPLANT.ITM~ ~override~
+  SAY NAME1 @550627
+  SAY NAME2 @550627
+  SAY DESC @550628
+
+//***********************************************************
+PRINT ~Installing new spells...~
+
+COPY ~CtB/Chores/spells~ ~override~
+
+// Making spells casting detectable
+
+//Tracking spell needs to be fixed.
+//Original spell has a bug. When it's been cast it adds itself as a new innate ability once again
+//to obtain an effect of constant presence of itself. But all that extra charges are going to reappear
+//after the rest altogether. To prevent that it's necessary to remove this spell from the spellbook by
+//applying effect with opcode 172 each casting. Then the newly added innate will be the only one,
+//exactly as it should be.
+//------------------------------------------
+// already implemented in G3 Fixpack v6
+//------------------------------------------
+COPY_EXISTING ~SPCL922.SPL~ ~override~    //Tracking
+  READ_LONG  0x64 abil_offset
+  READ_SHORT 0x68 abil_num
+  READ_LONG  0x6a eff_offset
+  READ_SHORT 0x70 glob_eff_cnt
+
+/*  INSERT_BYTES eff_offset 0x30       //fixing stockable Tracking innates
+  WRITE_SHORT eff_offset      172    //Remove spell
+  WRITE_BYTE  eff_offset+2    1
+  WRITE_BYTE  eff_offset+0x0c 1
+  WRITE_BYTE  eff_offset+0x12 100
+  WRITE_ASCII eff_offset+0x14 ~SPCL922~   */
+  INSERT_BYTES eff_offset 0x30
+  WRITE_SHORT eff_offset      265
+  WRITE_BYTE  eff_offset+2    1
+  WRITE_BYTE  eff_offset+4    1
+  WRITE_BYTE  eff_offset+0x0c 1
+  WRITE_BYTE  eff_offset+0x12 100
+  WRITE_ASCII eff_offset+0x14 ~SPCL922~
+  SET glob_eff_cnt = glob_eff_cnt + 1//2
+  WRITE_SHORT 0x70 glob_eff_cnt
+
+  SET found = 0
+  SET already_there = 0
+  FOR(cnt=0; cnt<"%abil_num%"; cnt+=cnt+1) BEGIN
+    READ_SHORT ("%abil_offset%"+0x28*cnt+0x20)  eff_idx
+    WRITE_SHORT ("%abil_offset%"+0x28*cnt+0x20)  eff_idx+1//2
+  END
+
+  FOR(cnt=0; cnt<"%abil_num%"; cnt+=cnt+1) BEGIN
+    READ_BYTE ("%abil_offset%"+cnt*0x28)  "type"
+    PATCH_IF( found=1 ) THEN BEGIN    //shift effects indexes for all possible abilities after Melee
+      READ_SHORT ("%abil_offset%"+cnt*0x28+0x20)  eff_idx
+      WRITE_SHORT ("%abil_offset%"+cnt*0x28+0x20)  eff_idx+1
+    END
+    PATCH_IF("%type%"=1) BEGIN        //Melee
+     READ_SHORT ("%abil_offset%"+cnt*0x28+0x1e)  eff_cnt
+     READ_SHORT ("%abil_offset%"+cnt*0x28+0x20)  eff_idx
+     FOR( cnt2=0; cnt2<eff_cnt; cnt2=cnt2+1 ) BEGIN
+       READ_SHORT ("%eff_offset%"+0x30*(cnt2+eff_idx))  "eff_type"
+       PATCH_IF( "%eff_type%"=265 ) THEN BEGIN
+         SET already_there = 1
+       END
+       WRITE_BYTE ("%eff_offset%"+0x30*(cnt2+eff_idx)+0xd)  0  //Bypass resistance for all effects
+     END
+     PATCH_IF( already_there=0 ) THEN BEGIN
+       WRITE_SHORT ("%abil_offset%"+cnt*0x28+0x1e)  eff_cnt+1
+       SET found = 1
+     END
+    END
+  END
+
+  PATCH_IF( already_there=0 ) THEN BEGIN
+   SET offset = ("%eff_offset%"+0x30*eff_idx)
+   INSERT_BYTES offset    0x30
+   WRITE_SHORT offset      265
+   WRITE_BYTE  offset+2    1
+   WRITE_BYTE  offset+0x0c 4
+   WRITE_LONG  offset+14   6     //Time
+   WRITE_BYTE  offset+0x12 100
+   WRITE_ASCII offset+0x14 ~SPCL922~
+  END
+BUT_ONLY_IF_IT_CHANGES
+
+
+
+COPY_EXISTING ~SPCL919.SPL~ ~override~    //Scribe Scrolls innate
+  READ_LONG  0x64 abil_offset
+  READ_SHORT 0x68 abil_num
+  READ_LONG  0x6a eff_offset
+  READ_SHORT 0x70 glob_eff_cnt
+
+  INSERT_BYTES eff_offset 0x30
+  WRITE_SHORT eff_offset      265
+  WRITE_BYTE  eff_offset+2    1
+  WRITE_BYTE  eff_offset+4    1
+  WRITE_BYTE  eff_offset+0x0c 1
+  WRITE_BYTE  eff_offset+0x12 100
+  WRITE_ASCII eff_offset+0x14 ~SPCL919~
+  SET glob_eff_cnt = glob_eff_cnt + 1
+  WRITE_SHORT 0x70 glob_eff_cnt
+
+  SET found = 0
+  SET already_there = 0
+  FOR(cnt=0; cnt<"%abil_num%"; cnt+=cnt+1) BEGIN
+    READ_SHORT ("%abil_offset%"+0x28*cnt+0x20)  eff_idx
+    WRITE_SHORT ("%abil_offset%"+0x28*cnt+0x20)  eff_idx+1
+  END
+
+  FOR(cnt=0; cnt<"%abil_num%"; cnt+=cnt+1) BEGIN
+    READ_BYTE ("%abil_offset%"+cnt*0x28)  "type"
+    PATCH_IF( found=1 ) THEN BEGIN    //shift effects indexes for all possible abilities after Melee
+      READ_SHORT ("%abil_offset%"+cnt*0x28+0x20)  eff_idx
+      WRITE_SHORT ("%abil_offset%"+cnt*0x28+0x20)  eff_idx+1
+    END
+    PATCH_IF("%type%"=1) BEGIN        //Melee
+     READ_SHORT ("%abil_offset%"+cnt*0x28+0x1e)  eff_cnt
+     READ_SHORT ("%abil_offset%"+cnt*0x28+0x20)  eff_idx
+     FOR( cnt2=0; cnt2<eff_cnt; cnt2=cnt2+1 ) BEGIN
+       READ_SHORT ("%eff_offset%"+0x30*(cnt2+eff_idx))  "eff_type"
+       PATCH_IF( "%eff_type%"=265 ) THEN BEGIN
+         SET already_there = 1
+       END
+     END
+     PATCH_IF( already_there=0 ) THEN BEGIN
+       WRITE_SHORT ("%abil_offset%"+cnt*0x28+0x1e)  eff_cnt+1
+       SET found = 1
+     END
+    END
+  END
+
+  PATCH_IF( already_there=0 ) THEN BEGIN
+   SET offset = ("%eff_offset%"+0x30*eff_idx)
+   INSERT_BYTES offset    0x30
+   WRITE_SHORT offset      265
+   WRITE_BYTE  offset+2    1
+   WRITE_BYTE  offset+0x0c 4
+   WRITE_LONG  offset+14   6     //Time
+   WRITE_BYTE  offset+0x12 100
+   WRITE_ASCII offset+0x14 ~SPCL919~
+  END
+BUT_ONLY_IF_IT_CHANGES
+
+
+//***********************************************************
+PRINT ~Registering CtB music themes...~
+
+COPY_EXISTING - ~SONGLIST.2DA~ ~override~
+ SET song_88 = 0
+ SET song_89 = 0
+ COUNT_2DA_ROWS 3 "rows_cnt"
+ FOR(cnt=0; cnt<"%rows_cnt%"; cnt=cnt+1 ) BEGIN
+   READ_2DA_ENTRY cnt 1 3  "name"
+   PATCH_IF( ("%name%" STRING_COMPARE_CASE "AR3500")=0 ) BEGIN
+     READ_2DA_ENTRY cnt 0 3  "song_88"
+   END
+   PATCH_IF( ("%name%" STRING_COMPARE_CASE "AR3502")=0 ) BEGIN
+     READ_2DA_ENTRY cnt 0 3  "song_89"
+   END
+ END
+
+COPY_EXISTING ~AR3500.ARE~  ~override~
+  READ_LONG  0xbc "song_offset"
+  WRITE_LONG ("%song_offset%")   "%song_88%"  //day song
+  WRITE_LONG ("%song_offset%"+4) "%song_88%"  //night song
+BUT_ONLY_IF_IT_CHANGES
+
+COPY_EXISTING ~AR3505.ARE~  ~override~
+              ~AR3508.ARE~  ~override~
+  READ_LONG  0xbc "song_offset"
+  WRITE_LONG ("%song_offset%")   "%song_89%"  //day song
+  WRITE_LONG ("%song_offset%"+4) "%song_89%"  //night song
+BUT_ONLY_IF_IT_CHANGES
+
+
+ACTION_IF( FILE_EXISTS ~data/TDD-RULE.bif~ AND
+           FILE_EXISTS_IN_GAME ~SPCERB1.SPL~ )
+THEN BEGIN
+  EXTEND_TOP ~AR3501.BCS~ ~CtB/Chores/Compat/TDD/t3501.BAF~
+  EXTEND_TOP ~AR3513.BCS~ ~CtB/Chores/Compat/TDD/t3513.BAF~
+END
+ELSE BEGIN
+  EXTEND_TOP ~AR3501.BCS~ ~CtB/Chores/Compat/CtB/t3501.BAF~
+  EXTEND_TOP ~AR3513.BCS~ ~CtB/Chores/Compat/CtB/t3513.BAF~
+END
+
+
+AT_INTERACTIVE_EXIT ~CtB/Chores/ChoresInstall.bat~
+AT_INTERACTIVE_UNINSTALL ~CtB/Chores/ChoresUninstall.bat~
+
+
+
+
+
+
+

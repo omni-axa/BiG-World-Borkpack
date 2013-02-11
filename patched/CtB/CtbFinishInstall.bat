@@ -115,7 +115,7 @@ move override\*.WED CTB-ARE
 weidu --make-biff CTB-ARE
 call CtB\deldir CTB-ARE
 
-move override\*.BAM CTB-BAM
+:: move override\*.BAM CTB-BAM
 weidu --make-biff CTB-BAM
 call CtB\deldir CTB-BAM
 
@@ -146,7 +146,6 @@ call CtB\deldir CTB-MOS
 :: move override\*.PRO CTB-RULE
 :: move override\*.VVC CTB-RULE
 :: move override\*.SPL CTB-RULE
-:: move override\*.STO CTB-RULE
 move override\*.WAV CTB-RULE
 weidu --make-biff CTB-RULE
 call CtB\deldir CTB-RULE
@@ -157,12 +156,13 @@ call CtB\deldir CTB-TIS1
 weidu --make-biff CTB-TIS2
 call CtB\deldir CTB-TIS2
 
-weidu --out CTB-TIS3 --biff-get-rest AM1700.*WAV
+weidu --out CTB-TIS3 --biff-get-rest AM1700*.WAV
 ren CTB-TIS3\AM1700.WAV AM3675.WAV
 ren CTB-TIS3\AM1700N.WAV AM3675N.WAV
 weidu --make-biff CTB-TIS3
 call CtB\deldir CTB-TIS3
 
+:: move override\*.WAV CTB-WAV
 move override\*.MVE CTB-WAV
 weidu --make-biff CTB-WAV
 call CtB\deldir CTB-WAV
