@@ -1,0 +1,33 @@
+--- TS\TSUninstaller.bat	Tue Mar 07 16:40:26 2006
++++ C:\BWP Patchstudio\patched files\TS\TSUninstaller.bat	Wed Feb 13 21:12:57 2013
+@@ -21,14 +21,14 @@
+ attrib -r data\TS-WAV.bif
+ del data\TS-WAV.bif
+ 
+-del chitin.key
+-copy TS\chitin.TS chitin.key
+-del TS\chitin.TS
++:: del chitin.key
++:: copy TS\chitin.TS chitin.key
++:: del TS\chitin.TS
+ 
+-call TS\deldir override
+-md override
+-xcopy /y /s /q TS\over.bak override
+-call TS\deldir TS\over.bak
++:: call TS\deldir override
++:: md override
++:: xcopy /y /s /q TS\over.bak override
++:: call TS\deldir TS\over.bak
+ 
+ call TS\deldir music\MxKachi
+ call TS\deldir music\MxSimel
+@@ -48,6 +48,6 @@
+ 
+ @echo.
+ @echo Bif removal complete.
+-@echo Original .key file restored
+-@echo Original \override\ folder also restored.
++:: @echo Original .key file restored
++:: @echo Original \override\ folder also restored.
+ @echo.

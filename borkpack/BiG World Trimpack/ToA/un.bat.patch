@@ -1,0 +1,19 @@
+--- ToA\un.bat	Sat Jul 25 20:15:04 2009
++++ C:\BWP Patchstudio\patched files\ToA\un.bat	Wed Feb 13 21:07:49 2013
+@@ -3,9 +3,9 @@
+ attrib -r data\ToA1.bif
+ del data\ToA1.bif
+ 
+-del chitin.key
+-copy ToA\chitin.toa chitin.key
+-del ToA\chitin.toa
++:: del chitin.key
++:: copy ToA\chitin.toa chitin.key
++:: del ToA\chitin.toa
+ 
+-xcopy /y /s /q ToA\over.bak override
+-rd /s /q ToA\over.bak
+\ No newline at end of file
++:: xcopy /y /s /q ToA\over.bak override
++:: rd /s /q ToA\over.bak
+\ No newline at end of file
