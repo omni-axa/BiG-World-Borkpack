@@ -2,7 +2,7 @@
 BACKUP ~Bonehillv275/backup~ 
 AUTHOR ~SirBillyBob@gmail.com and erebusant@verizon.net~
 
-VERSION ~v2.75b~
+VERSION ~v2.75c~
 
 // Isaya: readme at the beginning of installation, if missing in a language, use English
 README ~bonehillv275/language/%LANGUAGE%/ReadMe-Bonehill.html~ ~bonehillv275/language/english/ReadMe-Bonehill.html~
@@ -1507,8 +1507,18 @@ ACTION_IF FILE_EXISTS ~data/BG1ARE.bif~
     SAY 0x12ac @427 
     SAY 0x1370 @428 
     SAY 0x4054 @406
-  COPY ~bonehillv275/BGT/BH2103.are~ ~override/BH2103.are~         
-    SAY 0x244 @429 
+  // Bug fix: Lollorian and Isaya : http://www.shsforums.net/topic/52076-resting-on-bh2103-crashes-game/
+//    READ_LONG 0xc0 "rest_off"
+//    WRITE_SHORT ("%rest_off%" + 0x98) 0
+  // Alternative: Restore guard to tell you not to sleep, as in Tutu
+  COPY ~bonehillv275/BGT/BH2103.are~ ~override/BH2103.are~
+    SAY 0x574 @429
+    READ_LONG 0xc0 "rest_off"
+    SAY ("%rest_off%" + 0x20) @406
+    WRITE_ASCII ("%rest_off%" + 0x48) ~BHRGSLEP~
+    WRITE_SHORT ("%rest_off%" + 0x98) 1
+    WRITE_SHORT ("%rest_off%" + 0xA4) 1
+    BUT_ONLY_IF_IT_CHANGES
   COPY ~bonehillv275/BGT/BH2200.are~ ~override/BH2200.are~         
     SAY 0x1344 @430 
   COPY ~bonehillv275/BGT/BH2201.are~ ~override/BH2201.are~         

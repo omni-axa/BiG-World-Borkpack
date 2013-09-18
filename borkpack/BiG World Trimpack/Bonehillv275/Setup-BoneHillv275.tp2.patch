@@ -1,5 +1,5 @@
---- Setup-BoneHillv275.tp2	Sun Oct 02 04:24:17 2011
-+++ C:\BWP Patchstudio\patched files\Setup-BoneHillv275.tp2	Wed Oct 26 22:50:50 2011
+--- Setup-BoneHillv275.tp2	Sat Jul 13 12:48:48 2013
++++ C:\BWP Patchstudio\patched files\Setup-BoneHillv275.tp2	Sat Sep 14 16:07:40 2013
 @@ -41,12 +41,12 @@
  
  BEGIN @0
@@ -18,7 +18,7 @@
  
  MKDIR ~BH-TIS1~
  MKDIR ~BH-TIS2~
-@@ -1722,10 +1722,10 @@
+@@ -1732,10 +1732,10 @@
  
  ACTION_IF FILE_EXISTS ~data/BG1ARE.bif~
   THEN BEGIN

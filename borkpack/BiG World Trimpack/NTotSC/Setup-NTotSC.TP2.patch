@@ -1,5 +1,5 @@
---- Setup-NTotSC.tp2	2009-01-01 15:33:28.977500000 +0100
-+++ C:\BWP Patchstudio\patched files\Setup-NTotSC.tp2	2010-09-11 06:30:54.031250000 +0200
+--- Setup-NTotSC.TP2	Thu Jan 01 15:33:30 2009
++++ C:\BWP Patchstudio\patched files\Setup-NTotSC.TP2	Sun Aug 25 10:19:39 2013
 @@ -47,12 +47,12 @@
  
  BEGIN @0

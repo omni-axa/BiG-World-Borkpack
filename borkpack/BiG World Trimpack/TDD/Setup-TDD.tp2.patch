@@ -1,5 +1,5 @@
---- Setup-TDD.tp2	Thu Mar 25 13:49:43 2010
-+++ C:\BWP Patchstudio\patched files\Setup-TDD.tp2	Sat Apr 17 09:35:19 2010
+--- Setup-TDD.tp2	Mon Dec 20 20:21:56 2010
++++ C:\BWP Patchstudio\patched files\Setup-TDD.tp2	Sun Aug 25 10:48:30 2013
 @@ -119,10 +119,10 @@
  REQUIRE_FILE ~BG2FIXPACK/SETUP-BG2FIXPACK.TP2~ ~Please install the Gibberlings3 BG2 Fixpack Core Fixes before The Darkest Day~
  COPY + ~Setup-TDD.exe~ ~WeiDU.exe~
